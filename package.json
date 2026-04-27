@@ -1,0 +1,18 @@
+{
+  "name": "helio-platform",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @helio/api\" \"npm run dev --workspace @helio/web\"",
+    "build": "npm run build --workspace @helio/shared && npm run build --workspace @helio/api && npm run build --workspace @helio/web",
+    "typecheck": "npm run typecheck --workspace @helio/shared && npm run typecheck --workspace @helio/api && npm run typecheck --workspace @helio/web"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.4.5"
+  }
+}
