@@ -8,6 +8,13 @@ interface PageTransitionProps {
   className?: string;
 }
 
+/**
+ * Per-page entrance animation.
+ *
+ * Each direct child section rises in sequentially with a silky ease curve.
+ * The motion is intentionally subtle — a gentle 24 px upward travel + a brief
+ * opacity fade — so the content feels like it arrives, not jumps.
+ */
 export function PageTransition({ children, className }: PageTransitionProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -16,11 +23,11 @@ export function PageTransition({ children, className }: PageTransitionProps) {
       const root = rootRef.current;
       const page = root?.firstElementChild as HTMLElement | null;
 
-      if (!root || !page) {
-        return;
-      }
+      if (!root || !page) return;
 
-      const sections = Array.from(page.children).filter((section) => !section.hasAttribute("data-skip-page-transition")) as HTMLElement[];
+      const sections = Array.from(page.children).filter(
+        (section) => !section.hasAttribute("data-skip-page-transition")
+      ) as HTMLElement[];
 
       if (prefersReducedMotion()) {
         gsap.set(root, { autoAlpha: 1 });
@@ -30,29 +37,21 @@ export function PageTransition({ children, className }: PageTransitionProps) {
 
       gsap.set(root, { autoAlpha: 1 });
 
-      sections.forEach((section, index) => {
-        gsap.fromTo(
-          section,
-          {
-            autoAlpha: 0,
-            y: index === 0 ? 20 : 34,
-            filter: "blur(12px)"
+      gsap.fromTo(
+        sections,
+        { autoAlpha: 0, y: 28 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.72,
+          ease: "power4.out",
+          stagger: {
+            each: 0.09,
+            from: "start",
           },
-          {
-            autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.85,
-            ease: "power3.out",
-            clearProps: "filter,transform",
-            scrollTrigger: {
-              trigger: section,
-              start: index === 0 ? "top bottom" : "top 88%",
-              once: true
-            }
-          }
-        );
-      });
+          clearProps: "transform",
+        }
+      );
     },
     { scope: rootRef }
   );

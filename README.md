@@ -6,13 +6,11 @@ Helio is a premium, futuristic full-stack healthcare platform scaffolded as a sc
 
 - React + TypeScript
 - Tailwind CSS
-- GSAP
+- Framer Motion
 - React Router
 - Zustand
 - Recharts
 - Express + TypeScript
-- Firebase Admin + Firestore
-- Gemini API
 - Shared domain types
 
 ## Monorepo Structure
@@ -34,9 +32,9 @@ packages/
 - AI symptom checker with API integration fallback
 - Doctor marketplace
 - Community feed
-- Real-time messenger UI with embedded video workspace
-- Appointment calendar with notes and saved hours
-- Emergency mode with live doctor availability
+- Real-time messenger UI
+- Video consultation room
+- Appointment calendar
 - Health records timeline
 - Settings control panel
 - Hidden admin observatory
@@ -78,13 +76,10 @@ npm run dev
 - `GET /api/chat/threads`
 - `GET /api/chat/threads/:threadId/messages`
 - `GET /api/appointments`
-- `GET /api/appointments/calendar`
-- `POST /api/appointments/notes`
-- `GET /api/emergency/status`
 - `POST /api/symptoms/analyze`
 - `GET /api/admin/overview`
 
 ## Notes
 
-- Frontend pages use live API helpers with seeded fallbacks so the UI still runs cleanly without backend credentials.
-- The backend now supports Firestore-backed reads/writes with automatic seeded fallback and Gemini-powered symptom analysis via environment variables.
+- Frontend pages are scaffolded with premium mock data and one live API integration path for symptom analysis and login fallback.
+- The backend is designed as a production-friendly modular foundation and can be extended with database, auth provider, websockets, and video infrastructure.

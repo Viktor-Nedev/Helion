@@ -1,4 +1,4 @@
-import { Bell, MoonStar, Search, Siren, Sparkles, SunMedium } from "lucide-react";
+import { Bell, MoonStar, Search, Sparkles, SunMedium } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import type { Role } from "@helio/shared";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useAppStore } from "@/store/useAppStore";
 
 export function Topbar({ role }: { role: Role }) {
-  const { theme, toggleTheme, setRole, openEmergency } = useAppStore();
+  const { theme, toggleTheme, setRole } = useAppStore();
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -20,10 +20,6 @@ export function Topbar({ role }: { role: Role }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="danger" className="px-4" onClick={openEmergency}>
-          <Siren className="h-4 w-4" />
-          Emergency
-        </Button>
         <Button variant="secondary" className="px-4" onClick={() => setRole(role === "doctor" ? "patient" : "doctor")}>
           <Sparkles className="h-4 w-4" />
           Switch Role

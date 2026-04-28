@@ -3,10 +3,8 @@ import { NavLink } from "react-router-dom";
 
 import type { NavItem, Role } from "@helio/shared";
 
-import { EmergencyStatusCard } from "@/components/emergency/EmergencyStatusCard";
 import { navBadges } from "@/data/mock";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/store/useAppStore";
 
 const patientNav: NavItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: "dashboard" },
@@ -53,7 +51,6 @@ function iconFor(icon: string) {
 
 export function Sidebar({ role }: { role: Role }) {
   const items = role === "doctor" ? doctorNav : patientNav;
-  const { openEmergency } = useAppStore();
 
   return (
     <aside className="glass-panel hidden h-[calc(100vh-2rem)] w-[290px] flex-col rounded-[32px] border border-white/10 p-5 lg:flex">
@@ -95,8 +92,6 @@ export function Sidebar({ role }: { role: Role }) {
           );
         })}
       </nav>
-
-      <EmergencyStatusCard onOpen={openEmergency} />
     </aside>
   );
 }
