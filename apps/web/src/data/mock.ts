@@ -1,7 +1,13 @@
 import type {
   Appointment,
+  AppointmentCalendarPayload,
+  CalendarAppointment,
+  CalendarNote,
+  CalendarSlot,
   CommunityPost,
+  DashboardMetric,
   DoctorCardModel,
+  EmergencyStatus,
   HealthRecordItem,
   MessageThread,
   SymptomAnalysis,
@@ -177,7 +183,13 @@ export const chatThreads: MessageThread[] = [
     avatar: "EC",
     status: "typing",
     lastMessage: "Reviewing your latest heart-rate trend now.",
-    lastSeen: "typing..."
+    lastSeen: "typing...",
+    specialty: "Cardiology",
+    unreadCount: 2,
+    responseEta: "< 3 min",
+    videoReady: true,
+    riskTag: "Moderate follow-up",
+    roomId: "room-emma-chen"
   },
   {
     id: "thread-2",
@@ -186,7 +198,13 @@ export const chatThreads: MessageThread[] = [
     avatar: "CC",
     status: "online",
     lastMessage: "Your video room is ready for check-in.",
-    lastSeen: "2m ago"
+    lastSeen: "2m ago",
+    specialty: "Urgent Coordination",
+    unreadCount: 1,
+    responseEta: "Live now",
+    videoReady: true,
+    riskTag: "Urgent support",
+    roomId: "room-care-concierge"
   },
   {
     id: "thread-3",
@@ -195,34 +213,67 @@ export const chatThreads: MessageThread[] = [
     avatar: "NP",
     status: "offline",
     lastMessage: "Let's follow up in 48 hours.",
-    lastSeen: "1h ago"
+    lastSeen: "1h ago",
+    specialty: "Psychiatry",
+    unreadCount: 0,
+    responseEta: "Tomorrow",
+    videoReady: false,
+    riskTag: "Mental health plan",
+    roomId: "room-nina-patel"
   }
 ];
 
-export const conversation = [
-  {
-    id: "m-1",
-    sender: "them" as const,
-    type: "text" as const,
-    content: "Hi Mila, I saw the symptom summary. Does the chest pressure worsen during activity?",
-    time: "09:12"
-  },
-  {
-    id: "m-2",
-    sender: "me" as const,
-    type: "text" as const,
-    content: "Mostly when climbing stairs. It eases after a few minutes of rest.",
-    time: "09:15",
-    seen: true
-  },
-  {
-    id: "m-3",
-    sender: "them" as const,
-    type: "voice" as const,
-    content: "Voice note: reassuring explanation and next-step guidance.",
-    time: "09:18"
-  }
-];
+export const conversationByThread = {
+  "thread-1": [
+    {
+      id: "m-1",
+      sender: "them" as const,
+      type: "text" as const,
+      content: "Hi Mila, I saw the symptom summary. Does the chest pressure worsen during activity?",
+      time: "09:12",
+      authorName: "Dr. Emma Chen"
+    },
+    {
+      id: "m-2",
+      sender: "me" as const,
+      type: "text" as const,
+      content: "Mostly when climbing stairs. It eases after a few minutes of rest.",
+      time: "09:15",
+      seen: true,
+      authorName: "Mila Petrova"
+    },
+    {
+      id: "m-3",
+      sender: "them" as const,
+      type: "voice" as const,
+      content: "Voice note: reassuring explanation and next-step guidance.",
+      time: "09:18",
+      authorName: "Dr. Emma Chen"
+    }
+  ],
+  "thread-2": [
+    {
+      id: "m-4",
+      sender: "them" as const,
+      type: "text" as const,
+      content: "Your room will open 10 minutes before the appointment. Tap join when ready.",
+      time: "08:30",
+      authorName: "Care Concierge"
+    }
+  ],
+  "thread-3": [
+    {
+      id: "m-5",
+      sender: "them" as const,
+      type: "file" as const,
+      content: "Shared mindfulness routine.pdf",
+      time: "Yesterday",
+      authorName: "Dr. Nina Patel"
+    }
+  ]
+};
+
+export const conversation = conversationByThread["thread-1"];
 
 export const appointmentList: Appointment[] = [
   {
@@ -250,6 +301,143 @@ export const appointmentList: Appointment[] = [
     mode: "clinic"
   }
 ];
+
+export const calendarAppointmentsFallback: CalendarAppointment[] = [
+  {
+    id: "calendar-appt-1",
+    doctorName: "Dr. Emma Chen",
+    specialty: "Cardiology",
+    date: "2026-04-28",
+    status: "confirmed",
+    mode: "video",
+    startAt: "2026-04-28T19:00:00.000Z",
+    endAt: "2026-04-28T19:45:00.000Z",
+    location: "Helio video room",
+    threadId: "thread-1",
+    roomId: "room-emma-chen",
+    notes: "Bring your last heart-rate screenshots and recovery notes."
+  },
+  {
+    id: "calendar-appt-2",
+    doctorName: "Dr. Nina Patel",
+    specialty: "Psychiatry",
+    date: "2026-04-30",
+    status: "pending",
+    mode: "chat",
+    startAt: "2026-04-30T14:30:00.000Z",
+    endAt: "2026-04-30T15:00:00.000Z",
+    location: "Secure chat room",
+    threadId: "thread-3",
+    roomId: "room-nina-patel",
+    notes: "Follow-up on sleep quality and evening stress."
+  },
+  {
+    id: "calendar-appt-3",
+    doctorName: "Dr. Lucas Rivera",
+    specialty: "Neurology",
+    date: "2026-05-02",
+    status: "rescheduled",
+    mode: "clinic",
+    startAt: "2026-05-02T10:00:00.000Z",
+    endAt: "2026-05-02T10:30:00.000Z",
+    location: "Nova Diagnostic Lab",
+    notes: "Bring the latest migraine journal."
+  }
+];
+
+export const calendarNotesFallback: CalendarNote[] = [
+  {
+    id: "note-1",
+    date: "2026-04-28",
+    title: "Pre-call checklist",
+    content: "List the times when pressure spikes and whether it fades at rest.",
+    createdAt: "2026-04-28T08:05:00.000Z",
+    pinned: true
+  },
+  {
+    id: "note-2",
+    date: "2026-04-30",
+    title: "Mood tracking",
+    content: "Capture stress level after work and before sleep for 3 consecutive days.",
+    createdAt: "2026-04-27T19:40:00.000Z"
+  },
+  {
+    id: "note-3",
+    date: "2026-05-02",
+    title: "Clinic prep",
+    content: "Pack current prescriptions and last MRI summary before leaving home.",
+    createdAt: "2026-04-26T11:20:00.000Z"
+  }
+];
+
+export const calendarSlotsFallback: CalendarSlot[] = [
+  {
+    id: "slot-1",
+    doctorName: "Dr. Emma Chen",
+    specialty: "Cardiology",
+    startAt: "2026-04-29T08:30:00.000Z",
+    endAt: "2026-04-29T09:00:00.000Z",
+    mode: "video"
+  },
+  {
+    id: "slot-2",
+    doctorName: "Dr. Sara Ivanova",
+    specialty: "Dermatology",
+    startAt: "2026-04-29T13:15:00.000Z",
+    endAt: "2026-04-29T13:45:00.000Z",
+    mode: "chat"
+  },
+  {
+    id: "slot-3",
+    doctorName: "Dr. Nina Patel",
+    specialty: "Psychiatry",
+    startAt: "2026-05-01T17:45:00.000Z",
+    endAt: "2026-05-01T18:15:00.000Z",
+    mode: "video"
+  }
+];
+
+export const appointmentCalendarFallback: AppointmentCalendarPayload = {
+  month: "2026-04",
+  appointments: calendarAppointmentsFallback,
+  notes: calendarNotesFallback,
+  openSlots: calendarSlotsFallback
+};
+
+export const emergencyStatusFallback: EmergencyStatus = {
+  activeDoctors: 2,
+  queueLoad: "low",
+  averageResponse: "under 4 min",
+  recommendedAction: "Two doctors are online now. Start an urgent chat first, then escalate to video if symptoms intensify.",
+  doctors: [
+    {
+      id: "emergency-doc-1",
+      name: "Dr. Emma Chen",
+      specialty: "Cardiology",
+      status: "online",
+      responseEta: "2 min",
+      nextOpenSlot: "Live now",
+      roomReady: true
+    },
+    {
+      id: "emergency-doc-2",
+      name: "Dr. Sara Ivanova",
+      specialty: "Dermatology",
+      status: "online",
+      responseEta: "4 min",
+      nextOpenSlot: "Today at 21:00",
+      roomReady: true
+    },
+    {
+      id: "emergency-doc-3",
+      name: "Dr. Lucas Rivera",
+      specialty: "Neurology",
+      status: "busy",
+      responseEta: "12 min",
+      nextOpenSlot: "Today at 22:10"
+    }
+  ]
+};
 
 export const recordTimeline: HealthRecordItem[] = [
   {
@@ -307,7 +495,7 @@ export const patientOverview = {
     { label: "Sleep Consistency", value: "7.8h", delta: "+42m", trend: "up", tone: "cyan" },
     { label: "Stress Signal", value: "Low", delta: "-18%", trend: "up", tone: "violet" },
     { label: "Urgent Flags", value: "02", delta: "Stable", trend: "stable", tone: "rose" }
-  ],
+  ] satisfies DashboardMetric[],
   activity: [
     { label: "Mon", value: 64, secondary: 48 },
     { label: "Tue", value: 72, secondary: 52 },
@@ -354,7 +542,7 @@ export const doctorOverview = {
     { label: "Pending Requests", value: "08", delta: "-2", trend: "up", tone: "violet" },
     { label: "New Patients", value: "24", delta: "+12%", trend: "up", tone: "emerald" },
     { label: "Monthly Revenue", value: "$18.4k", delta: "+9.7%", trend: "up", tone: "rose" }
-  ],
+  ] satisfies DashboardMetric[],
   analytics: [
     { label: "Mon", value: 6, secondary: 4 },
     { label: "Tue", value: 8, secondary: 5 },

@@ -1,17 +1,26 @@
 import { Router } from "express";
 
-import { messagesByThread, threads } from "../../data/mockDatabase.js";
+import { getChatMessages, getChatThreads } from "../../lib/helio-repository.js";
 import { ok } from "../../lib/respond.js";
 
 const chatRouter = Router();
 
-chatRouter.get("/threads", (_request, response) => {
-  response.json(ok(threads));
+chatRouter.get("/threads", async (_request, response, next) => {
+  try {
+    const threadList = await getChatThreads();
+    response.json(ok(threadList));
+  } catch (error) {
+    next(error);
+  }
 });
 
-chatRouter.get("/threads/:threadId/messages", (request, response) => {
-  const messages = messagesByThread[request.params.threadId] ?? [];
-  response.json(ok(messages));
+chatRouter.get("/threads/:threadId/messages", async (request, response, next) => {
+  try {
+    const messages = await getChatMessages(request.params.threadId);
+    response.json(ok(messages));
+  } catch (error) {
+    next(error);
+  }
 });
 
 export { chatRouter };

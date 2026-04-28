@@ -1,20 +1,16 @@
 import { Router } from "express";
 
+import { getAdminOverview } from "../../lib/helio-repository.js";
 import { ok } from "../../lib/respond.js";
 
 const adminRouter = Router();
 
-adminRouter.get("/overview", (_request, response) => {
-  response.json(
-    ok({
-      revenue: "$284k",
-      users: 12480,
-      verifiedDoctors: 428,
-      communityFlags: 11,
-      verificationQueue: 9,
-      incidentStatus: "All systems stable"
-    })
-  );
+adminRouter.get("/overview", async (_request, response, next) => {
+  try {
+    response.json(ok(await getAdminOverview()));
+  } catch (error) {
+    next(error);
+  }
 });
 
 export { adminRouter };

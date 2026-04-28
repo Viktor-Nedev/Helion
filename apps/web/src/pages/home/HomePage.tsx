@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   Activity,
   ArrowRight,
@@ -11,7 +12,6 @@ import {
   Users,
   Video
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 import { HeroVisual } from "@/components/marketing/HeroVisual";
@@ -22,6 +22,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StatCounter } from "@/components/ui/StatCounter";
 import { animatedCounters, heroStats, landingFeatures, testimonials } from "@/data/mock";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 const iconMap = [BrainCircuit, Stethoscope, MessagesSquare, Video, Users, Activity];
 
@@ -41,42 +42,59 @@ const steps = [
 ];
 
 export function HomePage() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!rootRef.current || prefersReducedMotion()) {
+        return;
+      }
+
+      const timeline = gsap.timeline();
+
+      timeline
+        .fromTo("[data-home-hero-badge]", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.65, ease: "power3.out" })
+        .fromTo("[data-home-hero-title]", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.85, ease: "power3.out" }, 0.08)
+        .fromTo("[data-home-hero-copy]", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.16)
+        .fromTo("[data-home-hero-actions]", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.75, ease: "power3.out" }, 0.24)
+        .fromTo(
+          "[data-home-hero-stat]",
+          { autoAlpha: 0, y: 18, scale: 0.96 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.08, ease: "power3.out" },
+          0.34
+        );
+    },
+    { scope: rootRef }
+  );
+
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-12 pt-8 md:px-8">
+    <div ref={rootRef} className="mx-auto max-w-7xl px-4 pb-12 pt-8 md:px-8">
       <section className="grid min-h-[calc(100vh-140px)] items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+          <div
+            data-home-hero-badge
             className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-cyan-200"
           >
             Next generation digital healthcare platform
-          </motion.div>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1 }}
+          <h1
+            data-home-hero-title
             className="mt-8 max-w-4xl text-5xl font-bold leading-[0.95] text-white sm:text-6xl lg:text-7xl"
           >
             <span className="text-gradient">Smarter Healthcare</span> Starts Here
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
+          <p
+            data-home-hero-copy
             className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg"
           >
             Helio unifies AI symptom intelligence, doctor consultations, community care, real-time messaging, analytics,
             and premium telemedicine into one cinematic healthcare ecosystem.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3 }}
+          <div
+            data-home-hero-actions
             className="mt-10 flex flex-wrap gap-4"
           >
             <MagneticButton>
@@ -94,20 +112,18 @@ export function HomePage() {
                 </Button>
               </a>
             </MagneticButton>
-          </motion.div>
+          </div>
 
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {heroStats.map((stat, index) => (
-              <motion.div
+              <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.4 + index * 0.08 }}
+                data-home-hero-stat
                 className="rounded-[26px] border border-white/10 bg-white/[0.03] p-5"
               >
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
                 <p className="mt-2 text-sm text-slate-400">{stat.label}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

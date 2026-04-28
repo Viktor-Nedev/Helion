@@ -1,19 +1,56 @@
+import { useRef } from "react";
 import { Activity, HeartPulse, ShieldPlus, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusPill } from "@/components/ui/StatusPill";
 
 export function HeroVisual() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!rootRef.current || prefersReducedMotion()) {
+        return;
+      }
+
+      const timeline = gsap.timeline();
+
+      timeline
+        .fromTo("[data-hero-orb]", { autoAlpha: 0, scale: 0.72 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" })
+        .fromTo(
+          "[data-hero-visual-card]",
+          { autoAlpha: 0, y: 28, scale: 0.96 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out" },
+          0.08
+        )
+        .fromTo(
+          "[data-hero-visual-chip]",
+          { autoAlpha: 0, y: 14 },
+          { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power2.out" },
+          0.22
+        );
+
+      gsap.to("[data-hero-orb]", {
+        y: -16,
+        rotate: 2,
+        duration: 4.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    },
+    { scope: rootRef }
+  );
+
   return (
-    <div className="relative mx-auto w-full max-w-[520px]">
-      <motion.div
-        animate={{ y: [0, -16, 0], rotate: [-2, 2, -2] }}
-        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 8, ease: "easeInOut" }}
+    <div ref={rootRef} className="relative mx-auto w-full max-w-[520px]">
+      <div
+        data-hero-orb
         className="absolute left-1/2 top-4 h-36 w-36 -translate-x-1/2 rounded-full bg-cyan-400/20 blur-[80px]"
       />
 
-      <GlassCard className="relative overflow-hidden p-6 md:p-8">
+      <GlassCard data-hero-visual-card className="relative overflow-hidden p-6 md:p-8">
         <div className="absolute right-6 top-6">
           <StatusPill label="AI Synced" tone="cyan" />
         </div>
@@ -59,16 +96,14 @@ export function HeroVisual() {
 
           <div className="mt-5 grid grid-cols-3 gap-3">
             {["AI Checks", "Video Calls", "Wellness Sync"].map((label, index) => (
-              <motion.div
+              <div
                 key={label}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                data-hero-visual-chip
                 className="rounded-[20px] border border-white/10 bg-black/20 p-4"
               >
                 <div className="text-xs text-slate-400">{label}</div>
                 <div className="mt-2 text-lg font-semibold text-white">{index === 0 ? "24/7" : index === 1 ? "4K" : "Live"}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

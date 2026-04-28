@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useAppStore } from "@/store/useAppStore";
 
 export function Topbar({ role }: { role: Role }) {
-  const { theme, toggleTheme, setRole } = useAppStore();
+  const { theme, toggleTheme, setRole, openEmergency } = useAppStore();
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -20,7 +20,7 @@ export function Topbar({ role }: { role: Role }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="danger" className="px-4">
+        <Button variant="danger" className="px-4" onClick={openEmergency}>
           <Siren className="h-4 w-4" />
           Emergency
         </Button>

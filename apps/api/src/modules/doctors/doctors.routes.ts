@@ -1,12 +1,17 @@
 import { Router } from "express";
 
-import { doctors } from "../../data/mockDatabase.js";
+import { getDoctors } from "../../lib/helio-repository.js";
 import { ok } from "../../lib/respond.js";
 
 const doctorsRouter = Router();
 
-doctorsRouter.get("/", (_request, response) => {
-  response.json(ok(doctors));
+doctorsRouter.get("/", async (_request, response, next) => {
+  try {
+    const doctorList = await getDoctors();
+    response.json(ok(doctorList));
+  } catch (error) {
+    next(error);
+  }
 });
 
 export { doctorsRouter };

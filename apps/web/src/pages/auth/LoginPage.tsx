@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight, HeartPulse, ShieldCheck, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/Button";
@@ -84,12 +83,12 @@ export function LoginPage() {
             />
           </label>
 
-          <motion.div whileHover={{ y: -2 }} className="pt-2">
+          <div className="pt-2">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Opening workspace..." : "Login"}
               <ArrowRight className="h-4 w-4" />
             </Button>
-          </motion.div>
+          </div>
         </form>
 
         <div className="mt-8 rounded-[24px] border border-white/10 bg-white/[0.03] p-5">

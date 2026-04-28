@@ -8,9 +8,12 @@ interface AppState {
   theme: ThemeMode;
   isAssistantOpen: boolean;
   isBootSequenceVisible: boolean;
+  isEmergencyOpen: boolean;
   setRole: (role: Role) => void;
   toggleTheme: () => void;
   toggleAssistant: () => void;
+  openEmergency: () => void;
+  closeEmergency: () => void;
   finishBootSequence: () => void;
 }
 
@@ -21,12 +24,15 @@ export const useAppStore = create<AppState>()(
       theme: "aurora",
       isAssistantOpen: false,
       isBootSequenceVisible: true,
+      isEmergencyOpen: false,
       setRole: (role) => set({ role }),
       toggleTheme: () =>
         set((state) => ({
           theme: state.theme === "aurora" ? "midnight" : "aurora"
         })),
       toggleAssistant: () => set((state) => ({ isAssistantOpen: !state.isAssistantOpen })),
+      openEmergency: () => set({ isEmergencyOpen: true }),
+      closeEmergency: () => set({ isEmergencyOpen: false }),
       finishBootSequence: () => set({ isBootSequenceVisible: false })
     }),
     {

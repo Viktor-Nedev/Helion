@@ -1,6 +1,8 @@
-import { NavLink } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { useRef } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
+import { PageTransition } from "@/components/transitions/PageTransition";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { useAppStore } from "@/store/useAppStore";
 
 import { Sidebar } from "./Sidebar";
@@ -8,13 +10,15 @@ import { Topbar } from "./Topbar";
 
 export function DashboardLayout() {
   const { role } = useAppStore();
+  const location = useLocation();
+  const rootRef = useRef<HTMLDivElement>(null);
   const mobileNav =
     role === "doctor"
       ? [
           { label: "Dashboard", path: "/doctor-dashboard" },
           { label: "Messages", path: "/messages" },
           { label: "Appointments", path: "/appointments" },
-          { label: "Calls", path: "/video-calls" }
+          { label: "Calendar", path: "/appointments" }
         ]
       : [
           { label: "Dashboard", path: "/dashboard" },
@@ -23,12 +27,28 @@ export function DashboardLayout() {
           { label: "Messages", path: "/messages" }
         ];
 
+  useGSAP(
+    () => {
+      if (!rootRef.current || prefersReducedMotion()) {
+        return;
+      }
+
+      const chrome = rootRef.current.querySelectorAll("[data-dashboard-chrome]");
+      gsap.fromTo(chrome, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power3.out" });
+    },
+    { scope: rootRef, dependencies: [] }
+  );
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1600px] gap-6 px-4 py-4 md:px-6">
-      <Sidebar role={role} />
+    <div ref={rootRef} className="mx-auto flex min-h-screen max-w-[1600px] gap-6 px-4 py-4 md:px-6">
+      <div data-dashboard-chrome>
+        <Sidebar role={role} />
+      </div>
       <main className="flex-1 pb-10">
-        <Topbar role={role} />
-        <div className="scrollbar-none mt-4 flex gap-3 overflow-x-auto lg:hidden">
+        <div data-dashboard-chrome>
+          <Topbar role={role} />
+        </div>
+        <div data-dashboard-chrome className="scrollbar-none mt-4 flex gap-3 overflow-x-auto lg:hidden">
           {mobileNav.map((item) => (
             <NavLink
               key={item.path}
@@ -45,9 +65,9 @@ export function DashboardLayout() {
             </NavLink>
           ))}
         </div>
-        <div className="mt-6">
+        <PageTransition key={location.pathname} className="mt-6">
           <Outlet />
-        </div>
+        </PageTransition>
       </main>
     </div>
   );

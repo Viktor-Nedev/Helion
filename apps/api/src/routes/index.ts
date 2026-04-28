@@ -6,6 +6,7 @@ import { authRouter } from "../modules/auth/auth.routes.js";
 import { chatRouter } from "../modules/chat/chat.routes.js";
 import { communityRouter } from "../modules/community/community.routes.js";
 import { dashboardRouter } from "../modules/dashboard/dashboard.routes.js";
+import { emergencyRouter } from "../modules/emergency/emergency.routes.js";
 import { doctorsRouter } from "../modules/doctors/doctors.routes.js";
 import { symptomRouter } from "../modules/symptom/symptom.routes.js";
 
@@ -30,5 +31,6 @@ apiRouter.use("/chat", chatRouter);
 apiRouter.use("/appointments", appointmentsRouter);
 apiRouter.use("/symptoms", symptomRouter);
 apiRouter.use("/admin", adminRouter);
+apiRouter.use("/emergency", emergencyRouter);
 
 export { apiRouter };

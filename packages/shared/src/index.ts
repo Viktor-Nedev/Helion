@@ -54,6 +54,40 @@ export interface Appointment {
   mode: "video" | "chat" | "clinic";
 }
 
+export interface CalendarAppointment extends Appointment {
+  startAt: string;
+  endAt: string;
+  location?: string;
+  threadId?: string;
+  roomId?: string;
+  notes?: string;
+}
+
+export interface CalendarNote {
+  id: string;
+  date: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  pinned?: boolean;
+}
+
+export interface CalendarSlot {
+  id: string;
+  doctorName: string;
+  specialty: string;
+  startAt: string;
+  endAt: string;
+  mode: "video" | "chat" | "clinic";
+}
+
+export interface AppointmentCalendarPayload {
+  month: string;
+  appointments: CalendarAppointment[];
+  notes: CalendarNote[];
+  openSlots: CalendarSlot[];
+}
+
 export interface DoctorCardModel {
   id: string;
   name: string;
@@ -93,6 +127,12 @@ export interface MessageThread {
   status: "online" | "typing" | "offline";
   lastMessage: string;
   lastSeen: string;
+  specialty?: string;
+  unreadCount?: number;
+  responseEta?: string;
+  videoReady?: boolean;
+  riskTag?: string;
+  roomId?: string;
 }
 
 export interface ChatMessage {
@@ -102,6 +142,25 @@ export interface ChatMessage {
   content: string;
   time: string;
   seen?: boolean;
+  authorName?: string;
+}
+
+export interface EmergencyDoctorAvailability {
+  id: string;
+  name: string;
+  specialty: string;
+  status: "online" | "busy" | "offline";
+  responseEta: string;
+  nextOpenSlot: string;
+  roomReady?: boolean;
+}
+
+export interface EmergencyStatus {
+  activeDoctors: number;
+  queueLoad: "low" | "medium" | "high";
+  averageResponse: string;
+  recommendedAction: string;
+  doctors: EmergencyDoctorAvailability[];
 }
 
 export interface SymptomAnalysis {

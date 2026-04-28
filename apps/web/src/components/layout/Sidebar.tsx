@@ -1,10 +1,12 @@
-import { Activity, Calendar, HeartPulse, LayoutDashboard, MessageSquareMore, Settings, Shield, Users, Video } from "lucide-react";
+import { Activity, Calendar, HeartPulse, LayoutDashboard, MessageSquareMore, Settings, Shield, Users } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import type { NavItem, Role } from "@helio/shared";
 
+import { EmergencyStatusCard } from "@/components/emergency/EmergencyStatusCard";
 import { navBadges } from "@/data/mock";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/useAppStore";
 
 const patientNav: NavItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: "dashboard" },
@@ -13,7 +15,6 @@ const patientNav: NavItem[] = [
   { label: "Community", path: "/community", icon: "community" },
   { label: "Messages", path: "/messages", icon: "messages", badge: navBadges.messages },
   { label: "Appointments", path: "/appointments", icon: "calendar", badge: navBadges.appointments },
-  { label: "Video Calls", path: "/video-calls", icon: "video" },
   { label: "Health Records", path: "/health-records", icon: "records" },
   { label: "Settings", path: "/settings", icon: "settings" }
 ];
@@ -23,7 +24,6 @@ const doctorNav: NavItem[] = [
   { label: "Patients", path: "/doctors", icon: "users" },
   { label: "Requests", path: "/appointments", icon: "calendar", badge: "8" },
   { label: "Messages", path: "/messages", icon: "messages", badge: "5" },
-  { label: "Video Calls", path: "/video-calls", icon: "video" },
   { label: "Calendar", path: "/appointments", icon: "calendar" },
   { label: "Earnings", path: "/doctor-dashboard", icon: "activity" },
   { label: "Analytics", path: "/doctor-dashboard", icon: "dashboard" },
@@ -42,8 +42,6 @@ function iconFor(icon: string) {
       return MessageSquareMore;
     case "calendar":
       return Calendar;
-    case "video":
-      return Video;
     case "records":
       return Shield;
     case "settings":
@@ -55,6 +53,7 @@ function iconFor(icon: string) {
 
 export function Sidebar({ role }: { role: Role }) {
   const items = role === "doctor" ? doctorNav : patientNav;
+  const { openEmergency } = useAppStore();
 
   return (
     <aside className="glass-panel hidden h-[calc(100vh-2rem)] w-[290px] flex-col rounded-[32px] border border-white/10 p-5 lg:flex">
@@ -97,12 +96,7 @@ export function Sidebar({ role }: { role: Role }) {
         })}
       </nav>
 
-      <div className="rounded-[28px] border border-rose-400/20 bg-rose-400/10 p-4">
-        <p className="text-xs uppercase tracking-[0.28em] text-rose-200">Emergency Mode</p>
-        <p className="mt-2 text-sm leading-6 text-rose-100">
-          One tap instantly opens urgent doctor access, triage routing, and nearby clinic recommendations.
-        </p>
-      </div>
+      <EmergencyStatusCard onOpen={openEmergency} />
     </aside>
   );
 }

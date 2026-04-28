@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
@@ -8,7 +7,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger";
 }
 
-export function Button({ children, className, variant = "primary", ...props }: ButtonProps) {
+export function Button({
+  children,
+  className,
+  variant = "primary",
+  ...props
+}: ButtonProps) {
   const variants = {
     primary:
       "bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500 text-slate-950 shadow-glow hover:brightness-110",
@@ -21,18 +25,15 @@ export function Button({ children, className, variant = "primary", ...props }: B
   };
 
   return (
-    <motion.button
-      whileHover={{ scale: 1.02, y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 300, damping: 22 }}
+    <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition duration-300",
+        "inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-60",
         variants[variant],
         className
       )}
       {...props}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }

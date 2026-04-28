@@ -1,7 +1,10 @@
 import { ActivitySquare, ArrowRight, HeartPulse } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { useRef } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
+import { PageTransition } from "@/components/transitions/PageTransition";
 import { Button } from "@/components/ui/Button";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 const links = [
   { label: "Features", href: "/#features" },
@@ -11,10 +14,45 @@ const links = [
 ];
 
 export function PublicLayout() {
+  const location = useLocation();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!rootRef.current || prefersReducedMotion()) {
+        return;
+      }
+
+      const chrome = rootRef.current.querySelectorAll("[data-public-chrome]");
+      const footer = rootRef.current.querySelector("[data-public-footer]");
+
+      gsap.fromTo(chrome, { autoAlpha: 0, y: -18 }, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, ease: "power3.out" });
+
+      if (footer) {
+        gsap.fromTo(
+          footer,
+          { autoAlpha: 0, y: 28 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.85,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: footer,
+              start: "top bottom",
+              once: true
+            }
+          }
+        );
+      }
+    },
+    { scope: rootRef, dependencies: [] }
+  );
+
   return (
-    <div className="relative min-h-screen">
+    <div ref={rootRef} className="relative min-h-screen">
       <header className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-8">
-        <div className="glass-panel flex items-center gap-3 rounded-full px-4 py-3">
+        <div data-public-chrome className="glass-panel flex items-center gap-3 rounded-full px-4 py-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950">
             <ActivitySquare className="h-5 w-5" />
           </div>
@@ -24,7 +62,7 @@ export function PublicLayout() {
           </div>
         </div>
 
-        <nav className="glass-panel hidden items-center gap-2 rounded-full px-3 py-2 lg:flex">
+        <nav data-public-chrome className="glass-panel hidden items-center gap-2 rounded-full px-3 py-2 lg:flex">
           {links.map((link) => (
             <a
               key={link.label}
@@ -36,7 +74,7 @@ export function PublicLayout() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div data-public-chrome className="flex items-center gap-3">
           <NavLink to="/login" className="hidden text-sm text-slate-300 transition hover:text-white md:block">
             Sign in
           </NavLink>
@@ -49,9 +87,11 @@ export function PublicLayout() {
         </div>
       </header>
 
-      <Outlet />
+      <PageTransition key={location.pathname}>
+        <Outlet />
+      </PageTransition>
 
-      <footer className="mx-auto mt-20 max-w-7xl px-4 pb-10 md:px-8">
+      <footer data-public-footer className="mx-auto mt-20 max-w-7xl px-4 pb-10 md:px-8">
         <div className="glass-panel rounded-[30px] p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>

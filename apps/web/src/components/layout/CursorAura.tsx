@@ -1,25 +1,36 @@
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useEffect } from "react";
+import { useRef } from "react";
+
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 export function CursorAura() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const x = useSpring(mouseX, { stiffness: 90, damping: 20 });
-  const y = useSpring(mouseY, { stiffness: 90, damping: 20 });
+  const auraRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleMove(event: MouseEvent) {
-      mouseX.set(event.clientX - 180);
-      mouseY.set(event.clientY - 180);
-    }
+  useGSAP(
+    () => {
+      if (!auraRef.current || prefersReducedMotion()) {
+        return;
+      }
 
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, [mouseX, mouseY]);
+      const moveX = gsap.quickTo(auraRef.current, "x", { duration: 0.65, ease: "power3.out" });
+      const moveY = gsap.quickTo(auraRef.current, "y", { duration: 0.65, ease: "power3.out" });
+
+      const handleMove = (event: MouseEvent) => {
+        moveX(event.clientX - 180);
+        moveY(event.clientY - 180);
+      };
+
+      window.addEventListener("mousemove", handleMove);
+
+      return () => {
+        window.removeEventListener("mousemove", handleMove);
+      };
+    },
+    { scope: auraRef }
+  );
 
   return (
-    <motion.div
-      style={{ x, y }}
+    <div
+      ref={auraRef}
       className="pointer-events-none fixed left-0 top-0 z-0 hidden h-[360px] w-[360px] rounded-full bg-cyan-400/10 blur-[110px] lg:block"
     />
   );

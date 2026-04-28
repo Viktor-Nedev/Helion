@@ -1,8 +1,12 @@
 import type {
   Appointment,
+  CalendarAppointment,
+  CalendarNote,
+  CalendarSlot,
   ChatMessage,
   CommunityPost,
   DoctorCardModel,
+  EmergencyStatus,
   HealthRecordItem,
   MessageThread,
   SymptomAnalysis,
@@ -144,7 +148,13 @@ export const threads: MessageThread[] = [
     avatar: "EC",
     status: "typing",
     lastMessage: "Reviewing your latest heart-rate trend now.",
-    lastSeen: "typing..."
+    lastSeen: "typing...",
+    specialty: "Cardiology",
+    unreadCount: 2,
+    responseEta: "< 3 min",
+    videoReady: true,
+    riskTag: "Moderate follow-up",
+    roomId: "room-emma-chen"
   },
   {
     id: "thread-2",
@@ -153,7 +163,13 @@ export const threads: MessageThread[] = [
     avatar: "CC",
     status: "online",
     lastMessage: "Your video room is ready for check-in.",
-    lastSeen: "2m ago"
+    lastSeen: "2m ago",
+    specialty: "Urgent Coordination",
+    unreadCount: 1,
+    responseEta: "Live now",
+    videoReady: true,
+    riskTag: "Urgent support",
+    roomId: "room-care-concierge"
   },
   {
     id: "thread-3",
@@ -162,7 +178,13 @@ export const threads: MessageThread[] = [
     avatar: "NP",
     status: "offline",
     lastMessage: "Let's follow up in 48 hours.",
-    lastSeen: "1h ago"
+    lastSeen: "1h ago",
+    specialty: "Psychiatry",
+    unreadCount: 0,
+    responseEta: "Tomorrow",
+    videoReady: false,
+    riskTag: "Mental health plan",
+    roomId: "room-nina-patel"
   }
 ];
 
@@ -173,7 +195,8 @@ export const messagesByThread: Record<string, ChatMessage[]> = {
       sender: "them",
       type: "text",
       content: "Hi Mila, I saw the symptom check summary. Can you tell me whether the chest pressure gets worse during activity?",
-      time: "09:12"
+      time: "09:12",
+      authorName: "Dr. Emma Chen"
     },
     {
       id: "msg-2",
@@ -181,14 +204,16 @@ export const messagesByThread: Record<string, ChatMessage[]> = {
       type: "text",
       content: "Mostly when climbing stairs. Resting helps after a few minutes.",
       time: "09:15",
-      seen: true
+      seen: true,
+      authorName: "Mila Petrova"
     },
     {
       id: "msg-3",
       sender: "them",
       type: "voice",
       content: "Voice note: reassuring explanation and next-step guidance.",
-      time: "09:18"
+      time: "09:18",
+      authorName: "Dr. Emma Chen"
     }
   ],
   "thread-2": [
@@ -197,7 +222,8 @@ export const messagesByThread: Record<string, ChatMessage[]> = {
       sender: "them",
       type: "text",
       content: "Your room will open 10 minutes before the appointment. Tap join when ready.",
-      time: "08:30"
+      time: "08:30",
+      authorName: "Care Concierge"
     }
   ],
   "thread-3": [
@@ -206,7 +232,8 @@ export const messagesByThread: Record<string, ChatMessage[]> = {
       sender: "them",
       type: "file",
       content: "Shared mindfulness routine.pdf",
-      time: "Yesterday"
+      time: "Yesterday",
+      authorName: "Dr. Nina Patel"
     }
   ]
 };
@@ -237,6 +264,136 @@ export const appointments: Appointment[] = [
     mode: "clinic"
   }
 ];
+
+export const calendarAppointments: CalendarAppointment[] = [
+  {
+    id: "calendar-appt-1",
+    doctorName: "Dr. Emma Chen",
+    specialty: "Cardiology",
+    date: "2026-04-28",
+    status: "confirmed",
+    mode: "video",
+    startAt: "2026-04-28T19:00:00.000Z",
+    endAt: "2026-04-28T19:45:00.000Z",
+    location: "Helio video room",
+    threadId: "thread-1",
+    roomId: "room-emma-chen",
+    notes: "Bring your last heart-rate screenshots and recovery notes."
+  },
+  {
+    id: "calendar-appt-2",
+    doctorName: "Dr. Nina Patel",
+    specialty: "Psychiatry",
+    date: "2026-04-30",
+    status: "pending",
+    mode: "chat",
+    startAt: "2026-04-30T14:30:00.000Z",
+    endAt: "2026-04-30T15:00:00.000Z",
+    location: "Secure chat room",
+    threadId: "thread-3",
+    roomId: "room-nina-patel",
+    notes: "Follow-up on sleep quality and evening stress."
+  },
+  {
+    id: "calendar-appt-3",
+    doctorName: "Dr. Lucas Rivera",
+    specialty: "Neurology",
+    date: "2026-05-02",
+    status: "rescheduled",
+    mode: "clinic",
+    startAt: "2026-05-02T10:00:00.000Z",
+    endAt: "2026-05-02T10:30:00.000Z",
+    location: "Nova Diagnostic Lab",
+    notes: "Bring the latest migraine journal."
+  }
+];
+
+export const calendarNotes: CalendarNote[] = [
+  {
+    id: "note-1",
+    date: "2026-04-28",
+    title: "Pre-call checklist",
+    content: "List the times when pressure spikes and whether it fades at rest.",
+    createdAt: "2026-04-28T08:05:00.000Z",
+    pinned: true
+  },
+  {
+    id: "note-2",
+    date: "2026-04-30",
+    title: "Mood tracking",
+    content: "Capture stress level after work and before sleep for 3 consecutive days.",
+    createdAt: "2026-04-27T19:40:00.000Z"
+  },
+  {
+    id: "note-3",
+    date: "2026-05-02",
+    title: "Clinic prep",
+    content: "Pack current prescriptions and last MRI summary before leaving home.",
+    createdAt: "2026-04-26T11:20:00.000Z"
+  }
+];
+
+export const openCalendarSlots: CalendarSlot[] = [
+  {
+    id: "slot-1",
+    doctorName: "Dr. Emma Chen",
+    specialty: "Cardiology",
+    startAt: "2026-04-29T08:30:00.000Z",
+    endAt: "2026-04-29T09:00:00.000Z",
+    mode: "video"
+  },
+  {
+    id: "slot-2",
+    doctorName: "Dr. Sara Ivanova",
+    specialty: "Dermatology",
+    startAt: "2026-04-29T13:15:00.000Z",
+    endAt: "2026-04-29T13:45:00.000Z",
+    mode: "chat"
+  },
+  {
+    id: "slot-3",
+    doctorName: "Dr. Nina Patel",
+    specialty: "Psychiatry",
+    startAt: "2026-05-01T17:45:00.000Z",
+    endAt: "2026-05-01T18:15:00.000Z",
+    mode: "video"
+  }
+];
+
+export const emergencyStatus: EmergencyStatus = {
+  activeDoctors: 2,
+  queueLoad: "low",
+  averageResponse: "under 4 min",
+  recommendedAction: "Two doctors are online now. Start an urgent chat first, then escalate to video if symptoms intensify.",
+  doctors: [
+    {
+      id: "emergency-doc-1",
+      name: "Dr. Emma Chen",
+      specialty: "Cardiology",
+      status: "online",
+      responseEta: "2 min",
+      nextOpenSlot: "Live now",
+      roomReady: true
+    },
+    {
+      id: "emergency-doc-2",
+      name: "Dr. Sara Ivanova",
+      specialty: "Dermatology",
+      status: "online",
+      responseEta: "4 min",
+      nextOpenSlot: "Today at 21:00",
+      roomReady: true
+    },
+    {
+      id: "emergency-doc-3",
+      name: "Dr. Lucas Rivera",
+      specialty: "Neurology",
+      status: "busy",
+      responseEta: "12 min",
+      nextOpenSlot: "Today at 22:10"
+    }
+  ]
+};
 
 export const healthRecords: HealthRecordItem[] = [
   {
