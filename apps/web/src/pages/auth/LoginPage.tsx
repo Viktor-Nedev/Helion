@@ -9,7 +9,7 @@ import { useAppStore } from "@/store/useAppStore";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { setRole } = useAppStore();
+  const { setSession } = useAppStore();
   const [email, setEmail] = useState("mila@helio.health");
   const [password, setPassword] = useState("PremiumDemo123");
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export function LoginPage() {
     setLoading(true);
 
     const result = await loginWithEmail(email, password);
-    setRole(result.role);
+    setSession({ role: result.role, profile: result.profile });
     navigate(result.role === "doctor" ? "/doctor-dashboard" : "/dashboard");
     setLoading(false);
   }

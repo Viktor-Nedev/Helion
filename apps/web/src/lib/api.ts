@@ -80,6 +80,50 @@ export async function loginWithEmail(
   }
 }
 
+export async function registerWithEmail(input: {
+  fullName: string;
+  email: string;
+  password: string;
+  role: Role;
+  specialization?: string;
+  experience?: string;
+  licenseId?: string;
+  availability?: string;
+}): Promise<{
+  userId: string;
+  role: Role;
+  onboardingState: string;
+  profile: { id: string; name: string; email: string; title: string };
+}> {
+  try {
+    return await requestJson<{
+      userId: string;
+      role: Role;
+      onboardingState: string;
+      profile: { id: string; name: string; email: string; title: string };
+    }>("/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(input)
+    });
+  } catch (_error) {
+    const localId = `local-${Date.now()}`;
+    return {
+      userId: localId,
+      role: input.role,
+      onboardingState: input.role === "doctor" ? "verification_pending" : "care_ready",
+      profile: {
+        id: localId,
+        name: input.fullName || "Helio User",
+        email: input.email,
+        title: input.role === "doctor" ? "Doctor verification pending" : "Care Member"
+      }
+    };
+  }
+}
+
 export async function getAppointmentCalendar(month: string): Promise<AppointmentCalendarPayload> {
   try {
     return await requestJson<AppointmentCalendarPayload>(`/appointments/calendar?month=${encodeURIComponent(month)}`);
@@ -109,26 +153,36 @@ export async function createAppointmentNote(input: Pick<CalendarNote, "date" | "
   }
 }
 
-export async function getEmergencyStatus(): Promise<EmergencyStatus> {
+export async function getEmergencyStatus(useDemoFallback = true): Promise<EmergencyStatus> {
   try {
     return await requestJson<EmergencyStatus>("/emergency/status");
   } catch (_error) {
-    return emergencyStatusFallback;
+    if (useDemoFallback) {
+      return emergencyStatusFallback;
+    }
+
+    return {
+      activeDoctors: 0,
+      queueLoad: "low",
+      averageResponse: "n/a",
+      recommendedAction: "No emergency data available yet for this account.",
+      doctors: []
+    };
   }
 }
 
-export async function getChatThreads(): Promise<MessageThread[]> {
+export async function getChatThreads(useDemoFallback = true): Promise<MessageThread[]> {
   try {
     return await requestJson<MessageThread[]>("/chat/threads");
   } catch (_error) {
-    return chatThreads;
+    return useDemoFallback ? chatThreads : [];
   }
 }
 
-export async function getChatMessages(threadId: string): Promise<ChatMessage[]> {
+export async function getChatMessages(threadId: string, useDemoFallback = true): Promise<ChatMessage[]> {
   try {
     return await requestJson<ChatMessage[]>(`/chat/threads/${encodeURIComponent(threadId)}/messages`);
   } catch (_error) {
-    return conversationByThread[threadId as keyof typeof conversationByThread] ?? [];
+    return useDemoFallback ? conversationByThread[threadId as keyof typeof conversationByThread] ?? [] : [];
   }
 }

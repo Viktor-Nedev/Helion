@@ -9,12 +9,17 @@ import { VideoConsultWorkspace } from "@/components/chat/VideoConsultWorkspace";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { chatThreads, conversation, conversationByThread } from "@/data/mock";
 import { getChatMessages, getChatThreads } from "@/lib/api";
+import { useAppStore } from "@/store/useAppStore";
 
 export function ChatPage() {
+  const { isDemoAccount } = useAppStore();
+  const demoAccount = isDemoAccount();
+  const demoSeedThreads = demoAccount ? chatThreads : [];
   const [searchParams, setSearchParams] = useSearchParams();
-  const [threads, setThreads] = useState<MessageThread[]>(chatThreads);
-  const [activeThreadId, setActiveThreadId] = useState(searchParams.get("thread") ?? chatThreads[0].id);
-  const [messages, setMessages] = useState<ChatMessage[]>(conversation);
+  const initialThreadId = searchParams.get("thread") ?? demoSeedThreads[0]?.id ?? "";
+  const [threads, setThreads] = useState<MessageThread[]>(demoSeedThreads);
+  const [activeThreadId, setActiveThreadId] = useState(initialThreadId);
+  const [messages, setMessages] = useState<ChatMessage[]>(demoAccount ? conversation : []);
 
   const tab = searchParams.get("tab") === "video" ? "video" : "chat";
   const activeThread = threads.find((thread) => thread.id === activeThreadId) ?? threads[0];
@@ -22,19 +27,19 @@ export function ChatPage() {
   useEffect(() => {
     let mounted = true;
 
-    getChatThreads().then((result) => {
+    getChatThreads(demoAccount).then((result) => {
       if (!mounted) {
         return;
       }
 
       setThreads(result);
-      setActiveThreadId((current) => (result.some((thread) => thread.id === current) ? current : (result[0]?.id ?? current)));
+      setActiveThreadId((current) => (result.some((thread) => thread.id === current) ? current : (result[0]?.id ?? "")));
     });
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [demoAccount]);
 
   useEffect(() => {
     if (!activeThreadId) {
@@ -43,7 +48,7 @@ export function ChatPage() {
 
     let mounted = true;
 
-    getChatMessages(activeThreadId).then((result) => {
+    getChatMessages(activeThreadId, demoAccount).then((result) => {
       if (mounted) {
         setMessages(result);
       }
@@ -52,7 +57,7 @@ export function ChatPage() {
     return () => {
       mounted = false;
     };
-  }, [activeThreadId]);
+  }, [activeThreadId, demoAccount]);
 
   function updateSearch(next: { tab?: "chat" | "video"; thread?: string }) {
     const params = new URLSearchParams(searchParams);
@@ -70,7 +75,7 @@ export function ChatPage() {
 
   function handleSelectThread(threadId: string, nextTab: "chat" | "video" = tab) {
     setActiveThreadId(threadId);
-    setMessages(conversationByThread[threadId as keyof typeof conversationByThread] ?? []);
+    setMessages(demoAccount ? conversationByThread[threadId as keyof typeof conversationByThread] ?? [] : []);
     updateSearch({ tab: nextTab, thread: threadId });
   }
 

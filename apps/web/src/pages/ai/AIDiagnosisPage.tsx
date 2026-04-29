@@ -46,6 +46,16 @@ export function AIDiagnosisPage() {
   async function handleSubmit() {
     const trimmed = input.trim();
     if (!trimmed || loading) return;
+    if (trimmed.length < 5) {
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          content: "Please provide at least a short symptom description (minimum 5 characters) so I can analyze it."
+        }
+      ]);
+      return;
+    }
 
     const userEntry: ChatEntry = { sender: "user", content: trimmed };
     setChatHistory((prev) => [...prev, userEntry]);

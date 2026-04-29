@@ -3,6 +3,7 @@ import { Camera, ChevronLeft, FileText, MessageSquareMore, Mic, MonitorUp, Phone
 import type { ChatMessage, MessageThread } from "@helio/shared";
 
 import { formatTimeRange } from "@/lib/calendar";
+import { useAppStore } from "@/store/useAppStore";
 
 import { Button } from "../ui/Button";
 import { GlassCard } from "../ui/GlassCard";
@@ -14,7 +15,9 @@ interface VideoConsultWorkspaceProps {
 }
 
 export function VideoConsultWorkspace({ thread, messages, onBackToChat }: VideoConsultWorkspaceProps) {
+  const { sessionProfile } = useAppStore();
   const latestMessage = messages[messages.length - 1];
+  const patientName = sessionProfile?.name ?? "Patient";
 
   return (
     <div className="space-y-5">
@@ -39,7 +42,7 @@ export function VideoConsultWorkspace({ thread, messages, onBackToChat }: VideoC
               <div className="flex h-[500px] items-end justify-between rounded-[26px] border border-white/10 bg-black/25 p-6">
                 <div>
                   <p className="text-sm text-slate-400">Patient</p>
-                  <h3 className="text-2xl font-semibold text-white">Mila Petrova</h3>
+                  <h3 className="text-2xl font-semibold text-white">{patientName}</h3>
                   <p className="mt-2 text-sm text-slate-400">Current thread: {thread?.riskTag ?? "Live consultation"}</p>
                 </div>
                 <div className="rounded-full bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">Live</div>

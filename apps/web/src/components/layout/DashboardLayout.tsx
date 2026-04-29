@@ -51,7 +51,7 @@ export function DashboardLayout() {
         <div data-dashboard-chrome className="scrollbar-none mt-4 flex gap-3 overflow-x-auto lg:hidden">
           {mobileNav.map((item) => (
             <NavLink
-              key={item.path}
+              key={`${item.path}-${item.label}`}
               to={item.path}
               className={({ isActive }) =>
                 `whitespace-nowrap rounded-full border px-4 py-2 text-sm transition ${

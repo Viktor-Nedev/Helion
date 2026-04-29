@@ -6,8 +6,29 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { doctorOverview } from "@/data/mock";
+import { useAppStore } from "@/store/useAppStore";
 
 export function DoctorDashboardPage() {
+  const { isDemoAccount } = useAppStore();
+
+  if (!isDemoAccount()) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          badge="Doctor Intelligence Layer"
+          title="Clinical workflow, patient requests, and telemedicine analytics"
+          description="Your workspace is ready. Data widgets will appear once patients start booking consultations and sending requests."
+        />
+        <GlassCard className="p-6">
+          <h3 className="text-xl font-semibold text-white">No clinical activity yet</h3>
+          <p className="mt-3 text-sm leading-7 text-slate-300">
+            Complete verification, set your availability, and your dashboard will start filling with live patient activity.
+          </p>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader

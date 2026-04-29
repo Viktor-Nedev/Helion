@@ -46,6 +46,22 @@ type DashboardBundle = {
   overview: typeof patientDashboard | typeof doctorDashboard;
 };
 
+const DEMO_PATIENT_EMAIL = "mila@helio.health";
+
+function formatNameFromEmail(email: string) {
+  const localPart = email.split("@")[0] ?? "";
+
+  const cleaned = localPart
+    .replace(/[._-]+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+  return cleaned || "Helio User";
+}
+
 const seededMessages: StoredMessage[] = Object.entries(messagesByThread).flatMap(([threadId, items]) =>
   items.map((message, index) => ({
     ...message,
@@ -272,17 +288,25 @@ export async function getAdminOverview() {
 export async function loginWithEmail(email: string) {
   const normalizedEmail = email.trim().toLowerCase();
   const role = normalizedEmail.includes("doctor") ? "doctor" : "patient";
+  const fallbackName =
+    role === "doctor"
+      ? normalizedEmail.includes("doctor")
+        ? `Dr. ${formatNameFromEmail(normalizedEmail).replace(/^Dr\.\s*/i, "")}`
+        : "Dr. Alex Morgan"
+      : normalizedEmail === DEMO_PATIENT_EMAIL
+        ? "Mila Petrova"
+        : formatNameFromEmail(normalizedEmail);
   const fallbackProfile =
     role === "doctor"
       ? {
           id: "doctor-01",
-          name: "Dr. Alex Morgan",
+          name: fallbackName,
           email,
           title: "Lead Telehealth Specialist"
         }
       : {
           id: "patient-01",
-          name: "Mila Petrova",
+          name: fallbackName,
           email,
           title: "Premium Care Member"
         };
@@ -326,6 +350,15 @@ export async function registerUser(submitted: Record<string, unknown>) {
   const role = submitted.role === "doctor" ? "doctor" : "patient";
   const email = String(submitted.email ?? "").trim().toLowerCase();
   const userId = `${role}-${Date.now()}`;
+  const submittedName = String(submitted.fullName ?? "").trim();
+  const profileName = submittedName || (email ? formatNameFromEmail(email) : "Helio User");
+  const title = role === "doctor" ? "Doctor verification pending" : "Care Member";
+  const profile = {
+    id: userId,
+    name: profileName,
+    email,
+    title
+  };
 
   if (db && email) {
     await db.collection("users").doc(email).set(
@@ -334,18 +367,42 @@ export async function registerUser(submitted: Record<string, unknown>) {
         email,
         role,
         onboardingState: role === "doctor" ? "verification_pending" : "care_ready",
+        profile,
         submitted,
         createdAt: FieldValue.serverTimestamp()
       },
       { merge: true }
     );
+
+    await db
+      .collection("profiles")
+      .doc(userId)
+      .set(
+        {
+          id: userId,
+          role,
+          name: profileName,
+          email,
+          avatar: profileName
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part.charAt(0).toUpperCase())
+            .join(""),
+          location: "Not set",
+          status: "online",
+          title
+        } satisfies UserProfile,
+        { merge: true }
+      );
   }
 
   return {
     userId,
     role,
     onboardingState: role === "doctor" ? "verification_pending" : "care_ready",
-    submitted
+    submitted,
+    profile
   };
 }
 

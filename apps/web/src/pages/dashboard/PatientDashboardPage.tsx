@@ -8,8 +8,30 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { patientOverview } from "@/data/mock";
+import { useAppStore } from "@/store/useAppStore";
 
 export function PatientDashboardPage() {
+  const { isDemoAccount } = useAppStore();
+
+  if (!isDemoAccount()) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          badge="Live Care Layer"
+          title="Your personal health command center"
+          description="Your account is ready. Dashboard widgets will populate after your first AI check, appointment, or doctor conversation."
+        />
+
+        <GlassCard className="p-6">
+          <h3 className="text-xl font-semibold text-white">No health activity yet</h3>
+          <p className="mt-3 text-sm leading-7 text-slate-300">
+            Start with the AI page, book an appointment, or open a doctor chat to generate your personalized dashboard data.
+          </p>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader

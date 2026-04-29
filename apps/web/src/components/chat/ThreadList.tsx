@@ -30,10 +30,23 @@ export function ThreadList({
       </div>
 
       <div className="mt-4 flex max-h-[620px] flex-col gap-2 overflow-y-auto pr-1 scrollbar-none">
+        {threads.length === 0 ? (
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-4 py-6 text-sm text-slate-300">
+            No conversations yet for this account.
+          </div>
+        ) : null}
         {threads.map((thread) => (
-          <button
+          <div
             key={thread.id}
+            role="button"
+            tabIndex={0}
             onClick={() => onSelect(thread.id)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onSelect(thread.id);
+              }
+            }}
             className={cn(
               "rounded-[24px] border px-4 py-4 text-left transition",
               activeThreadId === thread.id
@@ -61,22 +74,30 @@ export function ThreadList({
                   {thread.riskTag ? <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] text-slate-300">{thread.riskTag}</span> : null}
                   {thread.responseEta ? <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] text-slate-300">ETA {thread.responseEta}</span> : null}
                   {thread.videoReady ? (
-                    <button
-                      type="button"
+                    <span
+                      role="button"
+                      tabIndex={0}
                       onClick={(event) => {
                         event.stopPropagation();
                         onOpenVideo?.(thread.id);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          onOpenVideo?.(thread.id);
+                        }
                       }}
                       className="inline-flex items-center gap-1 rounded-full bg-cyan-400/15 px-2.5 py-1 text-[11px] text-cyan-100"
                     >
                       <Video className="h-3 w-3" />
                       Join room
-                    </button>
+                    </span>
                   ) : null}
                 </div>
               </div>
             </div>
-          </button>
+          </div>
         ))}
       </div>
     </GlassCard>

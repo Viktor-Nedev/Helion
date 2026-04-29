@@ -5,7 +5,16 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { useAppStore } from "@/store/useAppStore";
 
 export function SettingsPage() {
-  const { theme, toggleTheme } = useAppStore();
+  const { theme, toggleTheme, sessionProfile } = useAppStore();
+  const profileName = sessionProfile?.name ?? "Helio User";
+  const profileTitle = sessionProfile?.title ?? "Member";
+  const initials =
+    profileName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part: string) => part.charAt(0).toUpperCase())
+      .join("") || "HU";
 
   return (
     <div className="space-y-6">
@@ -23,11 +32,11 @@ export function SettingsPage() {
           </div>
           <div className="mt-5 flex items-center gap-4 rounded-[24px] border border-white/10 bg-white/[0.03] p-5">
             <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-400 to-violet-500 text-lg font-bold text-slate-950">
-              MP
+              {initials}
             </div>
             <div>
-              <p className="text-lg font-semibold text-white">Mila Petrova</p>
-              <p className="text-sm text-slate-400">Premium Care Member</p>
+              <p className="text-lg font-semibold text-white">{profileName}</p>
+              <p className="text-sm text-slate-400">{profileTitle}</p>
             </div>
           </div>
         </GlassCard>

@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { registerWithEmail } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { setRole } = useAppStore();
+  const { setSession } = useAppStore();
   const [role, setSelectedRole] = useState<"patient" | "doctor">("patient");
   const [form, setForm] = useState({
     fullName: "",
@@ -26,10 +27,25 @@ export function RegisterPage() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setRole(role);
-    navigate(role === "doctor" ? "/doctor-dashboard" : "/dashboard");
+
+    const result = await registerWithEmail({
+      fullName: form.fullName.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      role,
+      specialization: form.specialization.trim() || undefined,
+      experience: form.experience.trim() || undefined,
+      licenseId: form.licenseId.trim() || undefined,
+      availability: form.availability.trim() || undefined
+    });
+
+    setSession({
+      role: result.role,
+      profile: result.profile
+    });
+    navigate(result.role === "doctor" ? "/doctor-dashboard" : "/dashboard");
   }
 
   return (
