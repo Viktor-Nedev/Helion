@@ -11,7 +11,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { Button } from "../ui/Button";
 
 export function EmergencyDrawer() {
-  const { isEmergencyOpen, closeEmergency } = useAppStore();
+  const { isEmergencyOpen, closeEmergency, isDemoAccount } = useAppStore();
   const [status, setStatus] = useState<EmergencyStatus>(emergencyStatusFallback);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function EmergencyDrawer() {
 
     let mounted = true;
 
-    getEmergencyStatus().then((result) => {
+    getEmergencyStatus(isDemoAccount()).then((result) => {
       if (mounted) {
         setStatus(result);
       }
@@ -30,7 +30,7 @@ export function EmergencyDrawer() {
     return () => {
       mounted = false;
     };
-  }, [isEmergencyOpen]);
+  }, [isEmergencyOpen, isDemoAccount]);
 
   if (!isEmergencyOpen) {
     return null;
@@ -39,7 +39,7 @@ export function EmergencyDrawer() {
   return (
     <div className="fixed inset-0 z-[58] flex justify-end bg-slate-950/55 backdrop-blur-sm">
       <button type="button" aria-label="Close emergency panel" className="flex-1" onClick={closeEmergency} />
-      <div className="glass-panel h-full w-full max-w-md border-l border-white/10 p-6 shadow-2xl">
+      <div className="scrollbar-none glass-panel h-full w-full max-w-md overflow-y-auto border-l border-white/10 p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-rose-200">Emergency Response</p>

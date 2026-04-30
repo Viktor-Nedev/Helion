@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { AIAssistantAvatar } from "@/components/ai/AIAssistantAvatar";
 import { HeroVisual } from "@/components/marketing/HeroVisual";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { Button } from "@/components/ui/Button";
@@ -128,7 +129,14 @@ export function HomePage() {
           </div>
         </div>
 
-        <HeroVisual />
+        <div className="space-y-5">
+          <HeroVisual />
+          <GlassCard className="p-4">
+            <p className="text-xs uppercase tracking-[0.24em] text-cyan-200">AI Assistant Avatar</p>
+            <p className="mt-2 text-sm text-slate-300">Normal state preview from your uploaded assistant avatar.</p>
+            <AIAssistantAvatar mode="idle" className="mt-4 h-44 w-full" />
+          </GlassCard>
+        </div>
       </section>
 
       <AnimatedSection id="features" className="mt-20">

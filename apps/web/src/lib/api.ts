@@ -124,10 +124,19 @@ export async function registerWithEmail(input: {
   }
 }
 
-export async function getAppointmentCalendar(month: string): Promise<AppointmentCalendarPayload> {
+export async function getAppointmentCalendar(month: string, useDemoFallback = true): Promise<AppointmentCalendarPayload> {
   try {
     return await requestJson<AppointmentCalendarPayload>(`/appointments/calendar?month=${encodeURIComponent(month)}`);
   } catch (_error) {
+    if (!useDemoFallback) {
+      return {
+        month,
+        appointments: [],
+        notes: [],
+        openSlots: []
+      };
+    }
+
     return {
       ...appointmentCalendarFallback,
       month

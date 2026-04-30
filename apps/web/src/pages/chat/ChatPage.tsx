@@ -9,23 +9,33 @@ import { VideoConsultWorkspace } from "@/components/chat/VideoConsultWorkspace";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { chatThreads, conversation, conversationByThread } from "@/data/mock";
 import { getChatMessages, getChatThreads } from "@/lib/api";
+import { getStarterMessages, getStarterThread } from "@/lib/user-data";
 import { useAppStore } from "@/store/useAppStore";
 
 export function ChatPage() {
   const { isDemoAccount } = useAppStore();
   const demoAccount = isDemoAccount();
-  const demoSeedThreads = demoAccount ? chatThreads : [];
+  const demoSeedThreads = demoAccount ? chatThreads : [getStarterThread()];
   const [searchParams, setSearchParams] = useSearchParams();
   const initialThreadId = searchParams.get("thread") ?? demoSeedThreads[0]?.id ?? "";
   const [threads, setThreads] = useState<MessageThread[]>(demoSeedThreads);
   const [activeThreadId, setActiveThreadId] = useState(initialThreadId);
-  const [messages, setMessages] = useState<ChatMessage[]>(demoAccount ? conversation : []);
+  const [messages, setMessages] = useState<ChatMessage[]>(demoAccount ? conversation : getStarterMessages());
 
   const tab = searchParams.get("tab") === "video" ? "video" : "chat";
   const activeThread = threads.find((thread) => thread.id === activeThreadId) ?? threads[0];
 
   useEffect(() => {
     let mounted = true;
+
+    if (!demoAccount) {
+      setThreads([getStarterThread()]);
+      setActiveThreadId("thread-welcome");
+      setMessages(getStarterMessages());
+      return () => {
+        mounted = false;
+      };
+    }
 
     getChatThreads(demoAccount).then((result) => {
       if (!mounted) {
@@ -50,7 +60,7 @@ export function ChatPage() {
 
     getChatMessages(activeThreadId, demoAccount).then((result) => {
       if (mounted) {
-        setMessages(result);
+        setMessages(result.length === 0 && !demoAccount ? getStarterMessages() : result);
       }
     });
 
@@ -75,7 +85,7 @@ export function ChatPage() {
 
   function handleSelectThread(threadId: string, nextTab: "chat" | "video" = tab) {
     setActiveThreadId(threadId);
-    setMessages(demoAccount ? conversationByThread[threadId as keyof typeof conversationByThread] ?? [] : []);
+    setMessages(demoAccount ? conversationByThread[threadId as keyof typeof conversationByThread] ?? [] : getStarterMessages());
     updateSearch({ tab: nextTab, thread: threadId });
   }
 

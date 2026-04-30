@@ -16,6 +16,7 @@ export function DashboardLayout() {
     role === "doctor"
       ? [
           { label: "Dashboard", path: "/doctor-dashboard" },
+          { label: "Blog", path: "/blog" },
           { label: "Messages", path: "/messages" },
           { label: "Appointments", path: "/appointments" },
           { label: "Calendar", path: "/appointments" }
@@ -24,6 +25,7 @@ export function DashboardLayout() {
           { label: "Dashboard", path: "/dashboard" },
           { label: "AI", path: "/ai-diagnosis" },
           { label: "Doctors", path: "/doctors" },
+          { label: "Blog", path: "/blog" },
           { label: "Messages", path: "/messages" }
         ];
 

@@ -1,18 +1,23 @@
 import { Activity, Calendar, HeartPulse, LayoutDashboard, MessageSquareMore, Settings, Shield, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import type { NavItem, Role } from "@helio/shared";
 
-import { navBadges } from "@/data/mock";
+import { getAppointmentCalendar, getChatThreads } from "@/lib/api";
+import { getMonthKey } from "@/lib/calendar";
+import { getLocalAppointments } from "@/lib/user-data";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/useAppStore";
 
 const patientNav: NavItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: "dashboard" },
   { label: "AI Diagnosis", path: "/ai-diagnosis", icon: "activity" },
   { label: "Doctors", path: "/doctors", icon: "users" },
   { label: "Community", path: "/community", icon: "community" },
-  { label: "Messages", path: "/messages", icon: "messages", badge: navBadges.messages },
-  { label: "Appointments", path: "/appointments", icon: "calendar", badge: navBadges.appointments },
+  { label: "Messages", path: "/messages", icon: "messages" },
+  { label: "Appointments", path: "/appointments", icon: "calendar" },
+  { label: "Blog", path: "/blog", icon: "community" },
   { label: "Health Records", path: "/health-records", icon: "records" },
   { label: "Settings", path: "/settings", icon: "settings" }
 ];
@@ -20,8 +25,9 @@ const patientNav: NavItem[] = [
 const doctorNav: NavItem[] = [
   { label: "Dashboard", path: "/doctor-dashboard", icon: "dashboard" },
   { label: "Patients", path: "/doctors", icon: "users" },
-  { label: "Requests", path: "/appointments", icon: "calendar", badge: "8" },
-  { label: "Messages", path: "/messages", icon: "messages", badge: "5" },
+  { label: "Requests", path: "/appointments", icon: "calendar" },
+  { label: "Messages", path: "/messages", icon: "messages" },
+  { label: "Blog", path: "/blog", icon: "community" },
   { label: "Calendar", path: "/appointments", icon: "calendar" },
   { label: "Earnings", path: "/doctor-dashboard", icon: "activity" },
   { label: "Analytics", path: "/doctor-dashboard", icon: "dashboard" },
@@ -50,7 +56,38 @@ function iconFor(icon: string) {
 }
 
 export function Sidebar({ role }: { role: Role }) {
+  const { isDemoAccount, sessionProfile } = useAppStore();
+  const [messageBadge, setMessageBadge] = useState("");
+  const [appointmentBadge, setAppointmentBadge] = useState("");
   const items = role === "doctor" ? doctorNav : patientNav;
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadBadges() {
+      const demo = isDemoAccount();
+      const chatThreads = demo ? await getChatThreads(true) : [];
+      const unreadCount = chatThreads.reduce((sum, thread) => sum + (thread.unreadCount ?? 0), 0);
+
+      const monthKey = getMonthKey(new Date());
+      const apiCalendar = await getAppointmentCalendar(monthKey, demo);
+      const localAppointments = getLocalAppointments(sessionProfile?.email);
+      const totalAppointments = apiCalendar.appointments.length + localAppointments.length;
+
+      if (!mounted) {
+        return;
+      }
+
+      setMessageBadge(unreadCount > 0 ? String(unreadCount) : "");
+      setAppointmentBadge(totalAppointments > 0 ? String(totalAppointments) : "");
+    }
+
+    loadBadges();
+
+    return () => {
+      mounted = false;
+    };
+  }, [isDemoAccount, sessionProfile?.email]);
 
   return (
     <aside className="glass-panel hidden h-[calc(100vh-2rem)] w-[290px] flex-col rounded-[32px] border border-white/10 p-5 lg:flex">
@@ -85,8 +122,10 @@ export function Sidebar({ role }: { role: Role }) {
                 <Icon className="h-4 w-4" />
                 {item.label}
               </span>
-              {item.badge ? (
-                <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-xs text-cyan-200">{item.badge}</span>
+              {(item.label === "Messages" ? messageBadge : item.label === "Appointments" || item.label === "Requests" ? appointmentBadge : item.badge) ? (
+                <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-xs text-cyan-200">
+                  {item.label === "Messages" ? messageBadge : item.label === "Appointments" || item.label === "Requests" ? appointmentBadge : item.badge}
+                </span>
               ) : null}
             </NavLink>
           );

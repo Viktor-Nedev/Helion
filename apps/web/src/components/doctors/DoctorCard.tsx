@@ -1,4 +1,4 @@
-import { CalendarPlus2, Languages, MessageCircleMore, Star, Video } from "lucide-react";
+import { CalendarPlus2, Languages, MessageCircleMore, Star } from "lucide-react";
 
 import type { DoctorCardModel } from "@helio/shared";
 
@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusPill } from "@/components/ui/StatusPill";
 
-export function DoctorCard({ doctor }: { doctor: DoctorCardModel }) {
+export function DoctorCard({
+  doctor,
+  onBook,
+  onMessage
+}: {
+  doctor: DoctorCardModel;
+  onBook?: (doctor: DoctorCardModel) => void;
+  onMessage?: (doctor: DoctorCardModel) => void;
+}) {
   return (
     <GlassCard className="p-6">
       <div className="flex flex-col gap-5">
@@ -48,14 +56,12 @@ export function DoctorCard({ doctor }: { doctor: DoctorCardModel }) {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Button className="flex-1 min-w-[160px]">Book Appointment</Button>
-          <Button variant="secondary" className="flex-1 min-w-[160px]">
+          <Button className="flex-1 min-w-[160px]" onClick={() => onBook?.(doctor)}>
+            Book Appointment
+          </Button>
+          <Button variant="secondary" className="flex-1 min-w-[160px]" onClick={() => onMessage?.(doctor)}>
             <MessageCircleMore className="h-4 w-4" />
             Message Doctor
-          </Button>
-          <Button variant="ghost" className="min-w-[140px]">
-            <Video className="h-4 w-4" />
-            Video Consult
           </Button>
         </div>
       </div>

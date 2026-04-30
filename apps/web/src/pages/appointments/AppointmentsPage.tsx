@@ -11,12 +11,15 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { getAppointmentCalendar, createAppointmentNote } from "@/lib/api";
 import { createMonthAnchor, formatShortDate, formatTimeRange, getMonthKey, shiftMonth, toDateKey } from "@/lib/calendar";
+import { getLocalAppointments, getLocalNotes, saveLocalNote } from "@/lib/user-data";
+import { useAppStore } from "@/store/useAppStore";
 
 const initialMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1, 12);
 const initialDate = toDateKey(new Date());
 
 export function AppointmentsPage() {
   const navigate = useNavigate();
+  const { sessionProfile, isDemoAccount } = useAppStore();
   const [monthDate, setMonthDate] = useState(initialMonth);
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [calendar, setCalendar] = useState<AppointmentCalendarPayload>({
@@ -34,17 +37,23 @@ export function AppointmentsPage() {
   useEffect(() => {
     let mounted = true;
     const monthKey = getMonthKey(monthDate);
+    const localAppointments = getLocalAppointments(sessionProfile?.email);
+    const localNotes = getLocalNotes(sessionProfile?.email);
 
-    getAppointmentCalendar(monthKey).then((result) => {
+    getAppointmentCalendar(monthKey, isDemoAccount()).then((result) => {
       if (mounted) {
-        setCalendar(result);
+        setCalendar({
+          ...result,
+          appointments: [...result.appointments, ...localAppointments],
+          notes: [...result.notes, ...localNotes]
+        });
       }
     });
 
     return () => {
       mounted = false;
     };
-  }, [monthDate]);
+  }, [monthDate, sessionProfile?.email, isDemoAccount]);
 
   const selectedAppointments = calendar.appointments.filter((appointment) => appointment.date === selectedDate);
   const selectedNotes = calendar.notes.filter((note) => note.date === selectedDate);
@@ -65,6 +74,7 @@ export function AppointmentsPage() {
       ...current,
       notes: [...current.notes, nextNote]
     }));
+    saveLocalNote(sessionProfile?.email, nextNote);
     setNoteForm({ title: "", content: "", pinned: false });
   }
 

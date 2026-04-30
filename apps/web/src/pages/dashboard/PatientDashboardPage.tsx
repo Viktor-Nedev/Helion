@@ -8,10 +8,12 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { patientOverview } from "@/data/mock";
+import { getAiHistory } from "@/lib/user-data";
 import { useAppStore } from "@/store/useAppStore";
 
 export function PatientDashboardPage() {
-  const { isDemoAccount } = useAppStore();
+  const { isDemoAccount, sessionProfile } = useAppStore();
+  const aiHistory = getAiHistory(sessionProfile?.email);
 
   if (!isDemoAccount()) {
     return (
@@ -27,6 +29,15 @@ export function PatientDashboardPage() {
           <p className="mt-3 text-sm leading-7 text-slate-300">
             Start with the AI page, book an appointment, or open a doctor chat to generate your personalized dashboard data.
           </p>
+          <div className="mt-5 space-y-3">
+            <p className="text-sm text-cyan-200">Saved AI analyses: {aiHistory.length}</p>
+            {aiHistory.slice(0, 3).map((entry) => (
+              <div key={entry.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-sm">
+                <p className="text-white">{entry.symptoms}</p>
+                <p className="mt-1 text-slate-400">{entry.analysis.riskLevel.toUpperCase()} risk</p>
+              </div>
+            ))}
+          </div>
         </GlassCard>
       </div>
     );

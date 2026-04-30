@@ -3,12 +3,14 @@ import { ArrowUp, BrainCircuit, Loader2, Sparkles } from "lucide-react";
 
 import type { SymptomAnalysis } from "@helio/shared";
 
+import { AIAssistantAvatar } from "@/components/ai/AIAssistantAvatar";
 import { AnalysisCard } from "@/components/ai/AnalysisCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SkeletonBlock } from "@/components/ui/SkeletonBlock";
-import { fallbackSymptomAnalysis } from "@/data/mock";
 import { analyzeSymptoms } from "@/lib/api";
+import { saveAiHistoryEntry } from "@/lib/user-data";
+import { useAppStore } from "@/store/useAppStore";
 
 interface ChatEntry {
   sender: "user" | "ai";
@@ -20,18 +22,20 @@ const EXAMPLES = [
   "Fever and sore throat since yesterday",
   "Severe headache with light sensitivity",
   "Nausea and stomach cramps after eating",
-  "Fatigue, dizziness, shortness of breath",
+  "Fatigue, dizziness, shortness of breath"
 ];
 
 const GREETING: ChatEntry = {
   sender: "ai",
   content:
-    "Hello! I'm Helio AI, your personal medical triage assistant. Describe your symptoms in detail and I will assess possible causes, risk level, and the next steps you should take.",
+    "Hello! I'm Helio AI, your personal medical triage assistant. Describe your symptoms in detail and I will assess possible causes, risk level, and the next steps you should take."
 };
 
 export function AIDiagnosisPage() {
+  const { sessionProfile } = useAppStore();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [thinkingSequence, setThinkingSequence] = useState(0);
   const [analysis, setAnalysis] = useState<SymptomAnalysis | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatEntry[]>([GREETING]);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -61,14 +65,16 @@ export function AIDiagnosisPage() {
     setChatHistory((prev) => [...prev, userEntry]);
     setInput("");
     setLoading(true);
+    setThinkingSequence((value) => value + 1);
     scrollToBottom();
 
     const result = await analyzeSymptoms(trimmed);
     setAnalysis(result);
+    saveAiHistoryEntry(sessionProfile?.email, trimmed, result);
 
     const aiFollowUp: ChatEntry = {
       sender: "ai",
-      content: `I've finished analysing your symptoms. Based on what you described, the risk level is **${result.riskLevel.toUpperCase()}**. The most likely cause is **${result.possibleCauses[0] ?? "under review"}**. I recommend: ${result.suggestedActions.slice(0, 2).join("; ")}. Scroll down to see the full breakdown.`,
+      content: `I've finished analysing your symptoms. Based on what you described, the risk level is **${result.riskLevel.toUpperCase()}**. The most likely cause is **${result.possibleCauses[0] ?? "under review"}**. I recommend: ${result.suggestedActions.slice(0, 2).join("; ")}. Scroll down to see the full breakdown.`
     };
 
     setChatHistory((prev) => [...prev, aiFollowUp]);
@@ -97,9 +103,7 @@ export function AIDiagnosisPage() {
       />
 
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-        {/* ── Chat interface ── */}
-        <GlassCard className="flex flex-col p-0 overflow-hidden">
-          {/* Header */}
+        <GlassCard className="flex flex-col overflow-hidden p-0">
           <div className="flex items-center gap-3 border-b border-white/10 px-6 py-5">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500">
               <BrainCircuit className="h-5 w-5 text-slate-950" />
@@ -111,13 +115,9 @@ export function AIDiagnosisPage() {
             <span className="ml-auto flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5 scrollbar-none" style={{ minHeight: "340px", maxHeight: "460px" }}>
+          <div className="scrollbar-none flex-1 space-y-4 overflow-y-auto px-6 py-5" style={{ minHeight: "340px", maxHeight: "460px" }}>
             {chatHistory.map((entry, index) => (
-              <div
-                key={index}
-                className={`flex gap-3 ${entry.sender === "user" ? "flex-row-reverse" : "flex-row"}`}
-              >
+              <div key={index} className={`flex gap-3 ${entry.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
                 {entry.sender === "ai" && (
                   <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/20 to-violet-500/20 ring-1 ring-white/10">
                     <Sparkles className="h-3.5 w-3.5 text-cyan-200" />
@@ -127,12 +127,10 @@ export function AIDiagnosisPage() {
                   className={`max-w-[82%] rounded-[22px] px-4 py-3 text-sm leading-7 ${
                     entry.sender === "ai"
                       ? "bg-white/[0.05] text-slate-200"
-                      : "bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950 font-medium"
+                      : "bg-gradient-to-br from-cyan-400 to-violet-500 font-medium text-slate-950"
                   }`}
                 >
-                  <p className="mb-1 text-[10px] uppercase tracking-[0.22em] opacity-60">
-                    {entry.sender === "ai" ? "Helio AI" : "You"}
-                  </p>
+                  <p className="mb-1 text-[10px] uppercase tracking-[0.22em] opacity-60">{entry.sender === "ai" ? "Helio AI" : "You"}</p>
                   {entry.content}
                 </div>
               </div>
@@ -154,8 +152,7 @@ export function AIDiagnosisPage() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Example chips */}
-          <div className="flex flex-wrap gap-2 border-t border-white/10 px-6 pt-4 pb-3">
+          <div className="flex flex-wrap gap-2 border-t border-white/10 px-6 pb-3 pt-4">
             {EXAMPLES.map((example) => (
               <button
                 key={example}
@@ -167,7 +164,6 @@ export function AIDiagnosisPage() {
             ))}
           </div>
 
-          {/* Input */}
           <div className="relative border-t border-white/10 px-4 pb-4 pt-3">
             <textarea
               ref={textareaRef}
@@ -175,7 +171,7 @@ export function AIDiagnosisPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               rows={2}
-              placeholder="Describe your symptoms… (Enter to send)"
+              placeholder="Describe your symptoms... (Enter to send)"
               className="w-full resize-none rounded-[20px] border border-white/10 bg-white/[0.04] px-4 py-3 pr-12 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300/40"
             />
             <button
@@ -188,8 +184,13 @@ export function AIDiagnosisPage() {
           </div>
         </GlassCard>
 
-        {/* ── Analysis results ── */}
         <div className="space-y-5">
+          <GlassCard className="p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200">Helio Avatar</p>
+            <p className="mt-2 text-sm text-slate-300">Idle while waiting. Thinking animation runs until AI returns a result.</p>
+            <AIAssistantAvatar mode={loading ? "thinking" : "idle"} sequence={thinkingSequence} className="mt-4 h-52 w-full" />
+          </GlassCard>
+
           {loading ? (
             <>
               <SkeletonBlock className="h-52" />
@@ -205,7 +206,7 @@ export function AIDiagnosisPage() {
               <div>
                 <p className="text-lg font-semibold text-white">Your analysis will appear here</p>
                 <p className="mt-2 text-sm leading-7 text-slate-400">
-                  Describe your symptoms in the chat and Helio AI will provide a full risk assessment, possible causes, and recommended next steps.
+                  Describe your symptoms in the chat and Helio AI will provide risk assessment, possible causes, and recommended next steps.
                 </p>
               </div>
             </GlassCard>
@@ -213,7 +214,6 @@ export function AIDiagnosisPage() {
         </div>
       </div>
 
-      {/* Full breakdown below when available */}
       {!loading && analysis && (
         <div>
           <p className="mb-4 text-xs uppercase tracking-[0.28em] text-slate-500">Full AI Breakdown</p>
@@ -223,3 +223,4 @@ export function AIDiagnosisPage() {
     </div>
   );
 }
+

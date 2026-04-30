@@ -4,8 +4,23 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { recordTimeline } from "@/data/mock";
+import { getAiHistory } from "@/lib/user-data";
+import { useAppStore } from "@/store/useAppStore";
 
 export function HealthRecordsPage() {
+  const { sessionProfile, isDemoAccount } = useAppStore();
+  const aiHistory = getAiHistory(sessionProfile?.email);
+  const timeline = isDemoAccount()
+    ? recordTimeline
+    : aiHistory.map((entry) => ({
+        id: entry.id,
+        title: entry.symptoms,
+        subtitle: "AI Symptom Analysis",
+        date: entry.createdAt.slice(0, 10),
+        tag: entry.analysis.riskLevel,
+        notes: entry.analysis.summary
+      }));
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -37,7 +52,12 @@ export function HealthRecordsPage() {
           </div>
 
           <div className="mt-6 space-y-5">
-            {recordTimeline.map((record) => (
+            {timeline.length === 0 ? (
+              <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-300">
+                No AI-generated records yet. Run an AI symptom analysis to populate your health timeline.
+              </div>
+            ) : null}
+            {timeline.map((record) => (
               <div key={record.id} className="relative rounded-[26px] border border-white/10 bg-white/[0.03] p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div>

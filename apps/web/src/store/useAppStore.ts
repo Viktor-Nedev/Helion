@@ -21,6 +21,7 @@ interface AppState {
   isEmergencyOpen: boolean;
   setRole: (role: Role) => void;
   setSession: (input: { role: Role; profile: SessionProfile }) => void;
+  updateSessionProfile: (patch: Partial<SessionProfile>) => void;
   clearSession: () => void;
   isDemoAccount: () => boolean;
   toggleTheme: () => void;
@@ -45,6 +46,10 @@ export const useAppStore = create<AppState>()(
           role,
           sessionProfile: profile
         }),
+      updateSessionProfile: (patch) =>
+        set((state) => ({
+          sessionProfile: state.sessionProfile ? { ...state.sessionProfile, ...patch } : state.sessionProfile
+        })),
       clearSession: () => set({ sessionProfile: null }),
       isDemoAccount: (): boolean => {
         const profile = get().sessionProfile;
