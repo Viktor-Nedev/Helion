@@ -107,11 +107,11 @@ export function HomePage() {
               </Link>
             </MagneticButton>
             <MagneticButton>
-              <a href="#features">
+              <Link to="/register">
                 <Button variant="secondary" className="min-w-[170px]">
                   Explore Features
                 </Button>
-              </a>
+              </Link>
             </MagneticButton>
           </div>
 
@@ -151,13 +151,15 @@ export function HomePage() {
             const Icon = iconMap[index];
 
             return (
-              <GlassCard key={feature.title} className="p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/20 to-violet-500/20">
-                  <Icon className="h-5 w-5 text-white" />
-                </div>
-                <h3 className="mt-5 text-xl font-semibold text-white">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{feature.description}</p>
-              </GlassCard>
+              <Link key={feature.title} to="/register" className="block">
+                <GlassCard className="h-full p-8 transition-all hover:bg-white/[0.05] hover:border-cyan-400/30 cursor-pointer">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/20 to-violet-500/20 shadow-glow-sm">
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="mt-6 text-2xl font-bold text-white">{feature.title}</h3>
+                  <p className="mt-4 text-base leading-8 text-slate-400">{feature.description}</p>
+                </GlassCard>
+              </Link>
             );
           })}
         </div>

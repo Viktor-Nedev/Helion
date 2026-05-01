@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 const links = [
-  { label: "Features", href: "/#features" },
-  { label: "Doctors", href: "/doctors" },
-  { label: "Community", href: "/community" },
-  { label: "AI Checker", href: "/ai-diagnosis" }
+  { label: "Features", href: "/register" },
+  { label: "Doctors", href: "/register" },
+  { label: "Community", href: "/register" },
+  { label: "AI Checker", href: "/register" }
 ];
 
 export function PublicLayout() {
@@ -52,13 +52,13 @@ export function PublicLayout() {
   return (
     <div ref={rootRef} className="relative min-h-screen">
       <header className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-8">
-        <div data-public-chrome className="glass-panel flex items-center gap-3 rounded-full px-4 py-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950">
-            <ActivitySquare className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white">Helio</p>
-            <p className="text-xs text-slate-400">Digital Healthcare OS</p>
+        <div data-public-chrome className="flex items-center gap-3">
+          <div className="flex h-12 w-32 items-center justify-center overflow-hidden rounded-xl">
+            <img 
+              src="/logo.png" 
+              alt="Helio Logo" 
+              className="h-full w-full object-cover scale-[1.1]" 
+            />
           </div>
         </div>
 

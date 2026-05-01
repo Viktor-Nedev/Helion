@@ -115,7 +115,7 @@ export function getStarterMessages(): ChatMessage[] {
   ];
 }
 
-function safeRead<T>(key: string, fallback: T): T {
+export function safeRead<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") {
     return fallback;
   }
@@ -133,7 +133,7 @@ function safeRead<T>(key: string, fallback: T): T {
   }
 }
 
-function safeWrite(key: string, value: unknown) {
+export function safeWrite(key: string, value: unknown) {
   if (typeof window === "undefined") {
     return;
   }
@@ -145,7 +145,7 @@ function safeWrite(key: string, value: unknown) {
   }
 }
 
-function userKey(email: string | undefined, section: string) {
+export function userKey(email: string | undefined, section: string) {
   const normalized = (email ?? "guest").trim().toLowerCase() || "guest";
   return `${KEY_PREFIX}:${normalized}:${section}`;
 }

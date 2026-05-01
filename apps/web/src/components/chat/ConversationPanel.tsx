@@ -39,20 +39,20 @@ export function ConversationPanel({
 
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-1 scrollbar-none">
         {messages.map((message) => (
-          <div key={message.id} className={cn("flex", message.sender === "me" ? "justify-end" : "justify-start")}>
+          <div key={message.id} className={cn("flex mb-4", message.sender === "me" ? "justify-end" : "justify-start")}>
             <div
               className={cn(
-                "max-w-[80%] rounded-[24px] px-4 py-3 text-sm leading-7",
+                "max-w-[85%] rounded-[28px] px-6 py-4 text-[15px] leading-relaxed",
                 message.sender === "me"
-                  ? "bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950"
-                  : "bg-white/[0.05] text-slate-100"
+                  ? "bg-gradient-to-r from-cyan-400 to-violet-500 text-slate-950 shadow-[0_4px_12px_rgba(34,211,238,0.2)]"
+                  : "bg-white/[0.05] text-slate-100 border border-white/5"
               )}
             >
-              <p className={cn("text-[11px] uppercase tracking-[0.22em]", message.sender === "me" ? "text-slate-900/70" : "text-slate-500")}>
+              <p className={cn("mb-2 text-[10px] uppercase tracking-[0.24em]", message.sender === "me" ? "text-slate-900/60" : "text-slate-500")}>
                 {message.authorName ?? (message.sender === "me" ? "You" : thread?.name ?? "Doctor")}
               </p>
-              <p>{message.content}</p>
-              <div className={cn("mt-2 text-xs", message.sender === "me" ? "text-slate-800/80" : "text-slate-500")}>
+              <p className="whitespace-pre-wrap">{message.content}</p>
+              <div className={cn("mt-3 flex items-center gap-2 text-[10px]", message.sender === "me" ? "text-slate-900/60" : "text-slate-500")}>
                 {message.time} {message.seen ? "• seen" : ""}
               </div>
             </div>

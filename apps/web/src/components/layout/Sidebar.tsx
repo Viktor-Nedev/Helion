@@ -92,14 +92,12 @@ export function Sidebar({ role }: { role: Role }) {
   return (
     <aside className="glass-panel hidden h-[calc(100vh-2rem)] w-[290px] flex-col rounded-[32px] border border-white/10 p-5 lg:flex">
       <div className="flex items-center gap-3 border-b border-white/10 pb-5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500 text-slate-950">
-          <HeartPulse className="h-5 w-5" />
-        </div>
-        <div>
-          <div className="text-lg font-semibold text-white">Helio</div>
-          <div className="text-xs uppercase tracking-[0.24em] text-slate-400">
-            {role === "doctor" ? "Doctor Console" : "Patient Hub"}
-          </div>
+        <div className="flex h-14 w-36 items-center justify-center overflow-hidden rounded-xl">
+          <img 
+            src="/logo.png" 
+            alt="Helio Logo" 
+            className="h-full w-full object-cover scale-[1.1]" 
+          />
         </div>
       </div>
 

@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { Activity, FileUp, Pill, ShieldPlus, Syringe } from "lucide-react";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { recordTimeline } from "@/data/mock";
-import { getAiHistory } from "@/lib/user-data";
+import { getAiHistory, safeRead, safeWrite, userKey } from "@/lib/user-data";
 import { useAppStore } from "@/store/useAppStore";
 
 export function HealthRecordsPage() {
@@ -21,6 +22,22 @@ export function HealthRecordsPage() {
         notes: entry.analysis.summary
       }));
 
+  const [records, setRecords] = useState(() => {
+    const saved = safeRead<Record<string, string>>(userKey(sessionProfile?.email, "medical-summary"), {
+      Allergies: "Pollen, Penicillin",
+      Medications: "Vitamin D, Antihistamine",
+      Vaccinations: "Influenza, COVID booster",
+      "Uploaded reports": "12 secure files"
+    });
+    return saved;
+  });
+
+  function updateRecord(key: string, value: string) {
+    const next = { ...records, [key]: value };
+    setRecords(next);
+    safeWrite(userKey(sessionProfile?.email, "medical-summary"), next);
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -32,15 +49,20 @@ export function HealthRecordsPage() {
       <div className="grid gap-5 xl:grid-cols-[0.7fr_1.3fr]">
         <div className="grid gap-5">
           {[
-            { icon: ShieldPlus, title: "Allergies", value: "Pollen, Penicillin" },
-            { icon: Pill, title: "Medications", value: "Vitamin D, Antihistamine" },
-            { icon: Syringe, title: "Vaccinations", value: "Influenza, COVID booster" },
-            { icon: FileUp, title: "Uploaded reports", value: "12 secure files" }
+            { icon: ShieldPlus, title: "Allergies" },
+            { icon: Pill, title: "Medications" },
+            { icon: Syringe, title: "Vaccinations" },
+            { icon: FileUp, title: "Uploaded reports" }
           ].map((item) => (
-            <GlassCard key={item.title} className="p-6">
+            <GlassCard key={item.title} className="p-6 transition-all focus-within:border-cyan-400/30">
               <item.icon className="h-5 w-5 text-cyan-200" />
-              <p className="mt-4 text-sm text-slate-400">{item.title}</p>
-              <p className="mt-2 text-xl font-semibold text-white">{item.value}</p>
+              <p className="mt-4 text-xs font-bold uppercase tracking-wider text-slate-500">{item.title}</p>
+              <input 
+                value={records[item.title] || ""}
+                onChange={(e) => updateRecord(item.title, e.target.value)}
+                placeholder={`Enter your ${item.title.toLowerCase()}...`}
+                className="mt-2 w-full bg-transparent text-xl font-semibold text-white outline-none border-none placeholder:text-slate-700"
+              />
             </GlassCard>
           ))}
         </div>

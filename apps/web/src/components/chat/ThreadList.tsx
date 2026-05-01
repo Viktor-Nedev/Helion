@@ -48,31 +48,43 @@ export function ThreadList({
               }
             }}
             className={cn(
-              "rounded-[24px] border px-4 py-4 text-left transition",
+              "rounded-[28px] border px-6 py-5 text-left transition",
               activeThreadId === thread.id
-                ? "border-cyan-300/30 bg-cyan-400/10"
-                : "border-transparent hover:border-white/10 hover:bg-white/[0.03]"
+                ? "border-cyan-300/40 bg-cyan-400/15 shadow-[0_8px_20px_rgba(34,211,238,0.1)]"
+                : "border-transparent hover:border-white/10 hover:bg-white/[0.04]"
             )}
           >
-            <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500 font-bold text-slate-950">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-violet-500 text-lg font-bold text-slate-950">
                 {thread.avatar}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="truncate font-medium text-white">{thread.name}</span>
-                    {thread.specialty ? <p className="truncate text-xs text-cyan-200">{thread.specialty}</p> : null}
+                    <span className="text-[15px] font-bold text-white leading-none">{thread.name}</span>
+                    {thread.specialty ? <p className="mt-1 truncate text-xs font-medium text-cyan-200">{thread.specialty}</p> : null}
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs text-slate-500">{thread.lastSeen}</span>
-                    {thread.unreadCount ? <p className="text-xs text-white">{thread.unreadCount} new</p> : null}
+                  <div className="text-right shrink-0">
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">{thread.lastSeen}</span>
+                    {thread.unreadCount ? (
+                      <p className="mt-1 text-[11px] font-bold text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-full inline-block">
+                        {thread.unreadCount} NEW
+                      </p>
+                    ) : null}
                   </div>
                 </div>
-                <p className="mt-1 truncate text-sm text-slate-400">{thread.lastMessage}</p>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {thread.riskTag ? <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] text-slate-300">{thread.riskTag}</span> : null}
-                  {thread.responseEta ? <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] text-slate-300">ETA {thread.responseEta}</span> : null}
+                <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-400">{thread.lastMessage}</p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  {thread.riskTag ? (
+                    <span className="rounded-full bg-white/5 border border-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
+                      {thread.riskTag}
+                    </span>
+                  ) : null}
+                  {thread.responseEta ? (
+                    <span className="rounded-full bg-white/5 border border-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      ETA {thread.responseEta}
+                    </span>
+                  ) : null}
                   {thread.videoReady ? (
                     <span
                       role="button"
@@ -88,7 +100,7 @@ export function ThreadList({
                           onOpenVideo?.(thread.id);
                         }
                       }}
-                      className="inline-flex items-center gap-1 rounded-full bg-cyan-400/15 px-2.5 py-1 text-[11px] text-cyan-100"
+                      className="inline-flex items-center gap-2 rounded-full bg-cyan-400/20 border border-cyan-400/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-100 transition hover:bg-cyan-400/30"
                     >
                       <Video className="h-3 w-3" />
                       Join room
