@@ -9,13 +9,13 @@ import { apiRouter } from "./routes/index.js";
 
 export const app = express();
 
-app.use(helmet());
+app.use((helmet as any)());
 app.use(
-  cors({
+  (cors as any)({
     origin: env.corsOrigin
   })
 );
-app.use(morgan("dev"));
+app.use((morgan as any)("dev"));
 app.use(express.json());
 
 app.use("/api", apiRouter);

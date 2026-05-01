@@ -1,85 +1,43 @@
-# Helio
+# Helion - Digital Healthcare OS
 
-Helio is a premium, futuristic full-stack healthcare platform scaffolded as a scalable monorepo.
+Helion is a next-generation healthcare platform that unifies AI symptom intelligence, doctor consultations, community care, and personal health analytics into one cinematic ecosystem.
 
-## Stack
+## Inspiration
+Modern healthcare interfaces are often cold, fragmented, and overwhelming during high-stakes moments. Inspired by premium product design and futuristic cinematic interfaces, we wanted to build a "Digital Healthcare OS." Our goal was to transform the clinical experience into something that feels calm, intuitive, and human-centered, replacing static forms with an intelligent, conversational, and visually immersive assistant.
 
-- React + TypeScript
-- Tailwind CSS
-- Framer Motion
-- React Router
-- Zustand
-- Recharts
-- Express + TypeScript
-- Shared domain types
+## What it does
+Helion serves as a complete command center for a patient's health:
+- **AI Triage Assistant:** A cinematic avatar-driven interface that analyzes symptoms in real-time using advanced LLMs, providing risk assessments and recommended care paths.
+- **Doctor Marketplace:** A structured directory where patients can find specialists, view availability, and book appointments directly into a unified calendar.
+- **Integrated Care Rooms:** Seamless transition between text messaging and high-definition video consultations without leaving the workspace context.
+- **Medical Blog:** A platform for doctors to share insights and patients to engage with evidence-based health content.
+- **Private Records Vault:** A secure, interactive timeline of a user's medical history, including AI-generated reports and manually managed records for allergies, medications, and vaccinations.
 
-## Monorepo Structure
+## How we built it
+- **Frontend:** React with Vite and TypeScript for a fast, type-safe development experience.
+- **Styling:** Custom Vanilla CSS and Tailwind CSS, utilizing a sophisticated "Glassmorphism" design system to create a premium, translucent aesthetic.
+- **Animations:** GSAP (GreenSock Animation Platform) was used to drive cinematic route transitions, staggered entrances, and the luminous "sweep" effects.
+- **Backend/Auth:** Firebase Admin SDK handles secure user authentication and data persistence.
+- **AI Engine:** Google Gemini API powers the intelligent symptom analysis, providing structured JSON responses for precise triaging.
+- **Architecture:** Organized as a Turborepo monorepo to separate the API, Web app, and Shared medical schemas.
 
-```text
-apps/
-  api/      Express API with modular healthcare routes
-  web/      Premium React frontend with cinematic UI
-packages/
-  shared/   Shared TypeScript domain models
-```
+## Challenges we ran into
+- **Monorepo Deployment:** Orchestrating Vercel deployments to correctly handle TypeScript path mapping and dependency installation across multiple apps.
+- **AI State Syncing:** Syncing the visual "Thinking" states of our AI avatar with real-time API response streams to ensure the user never feels disconnected from the process.
+- **UI Performance:** Maintaining 60FPS animations while handling high-density medical data and glass-blur effects across various device sizes.
 
-## Core Experiences
+## Accomplishments that we're proud of
+- **Cinematic Transitions:** The implementation of the `RouteTransitionOverlay` which provides a seamless, "luminous" feeling when navigating between different care modules.
+- **AI Accuracy:** Crafting prompt schemas for Gemini that return highly structured, medical-grade triage results with consistent risk scoring.
+- **Design System:** Building a reusable set of "Glass" components that give the entire platform a unified, state-of-the-art visual language.
 
-- Cinematic landing page
-- Login and registration with patient or doctor role
-- Patient dashboard
-- Doctor dashboard
-- AI symptom checker with API integration fallback
-- Doctor marketplace
-- Community feed
-- Real-time messenger UI
-- Video consultation room
-- Appointment calendar
-- Health records timeline
-- Settings control panel
-- Hidden admin observatory
-- Floating Helio AI assistant
+## What we learned
+- **Advanced GSAP:** Mastering timeline orchestration for non-linear web animations.
+- **Firebase Integration:** Implementing the Admin SDK within a modern Express/TypeScript environment for robust backend security.
+- **User Flow Design:** The importance of "onboarding enforcement"—ensuring users are correctly triaged and authenticated before accessing sensitive medical features.
 
-## Local Setup
-
-1. Install Node.js 20+ and npm.
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start the API and frontend:
-
-```bash
-npm run dev
-```
-
-4. Open:
-
-- Web: `http://localhost:5173`
-- API: `http://localhost:4000/api/health`
-
-## Environment Files
-
-- `apps/web/.env.example`
-- `apps/api/.env.example`
-
-## API Modules
-
-- `POST /api/auth/login`
-- `POST /api/auth/register`
-- `GET /api/dashboard/patient`
-- `GET /api/dashboard/doctor`
-- `GET /api/doctors`
-- `GET /api/community/feed`
-- `GET /api/chat/threads`
-- `GET /api/chat/threads/:threadId/messages`
-- `GET /api/appointments`
-- `POST /api/symptoms/analyze`
-- `GET /api/admin/overview`
-
-## Notes
-
-- Frontend pages are scaffolded with premium mock data and one live API integration path for symptom analysis and login fallback.
-- The backend is designed as a production-friendly modular foundation and can be extended with database, auth provider, websockets, and video infrastructure.
+## What's next for Helion
+- **Wearable Integration:** Real-time syncing with Apple Health and Google Fit to provide proactive AI health alerts before symptoms even start.
+- **Smart Pharmacy:** Direct integration with prescription services to allow one-click medication delivery following a doctor consultation.
+- **Blockchain Security:** Migrating the Health Records vault to a decentralized, encrypted ledger for ultimate patient data sovereignty.
+- **Global Triage:** Expanding the AI's linguistic capabilities to support multilingual triage for underserved global communities.
